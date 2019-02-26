@@ -1,9 +1,8 @@
-from sklearn.linear_model import SGDClassifier
-import bloom_filter as bf
 import numpy as np
 import copy
 import sys
 import logging
+import bloom_filter as bf
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.WARNING)
@@ -25,6 +24,7 @@ class BloomClassifier(object):
     def __init__(self, model):
         super(BloomClassifier, self).__init__()
         self.model = model
+        self.model2 = None
         self.to_be_inserted = []
         self.count = 0
 
@@ -44,13 +44,14 @@ class BloomClassifier(object):
 
     def insert_one(self, idx):
         y1 = self.model.predict([idx]) #predict returns [p_true, p_false]
+        y2 = None
         try:
             y2 = self.model2.predict([idx])
-        except Exception() as e:
+        except Exception as e:
             pass
 
         if np.argmax(y1) == 1:
-            if y2:
+            if y2 is not None:
                 if np.argmax(y2) == 1:
                     self.overflow_filter.insert(idx)
             else:
@@ -96,8 +97,11 @@ class BloomClassifier(object):
     def check(self, x):
         if np.argmax(self.model.predict([x])) == '0':
                 return True
-        if np.argmax(self.model2.predict([x])) == '0':
+        try:
+            if np.argmax(self.model2.predict([x])) == '0':
                 return True
+        except Exception:
+            pass
         return self.overflow_filter.check(x)
 
     def get_fpr(self, X, Y):
@@ -106,4 +110,5 @@ class BloomClassifier(object):
         return fp / n
 
     def get_size(self):
-        return sys.getsizeof(self.clfs) + sys.getsizeof(self.overflow_filter)
+        # return sys.getsizeof(self.clfs) + sys.getsizeof(self.overflow_filter)
+        return sys.getsizeof(self.overflow_filter)

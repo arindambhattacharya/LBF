@@ -85,7 +85,7 @@ class BloomFilter():
         bits = []
         if not clf_hash:
             for i in range(self.hash_count):
-                bits.append(mmh3.hash(item, i) % self.size)
+                bits.append(mmh3.hash(item.tostring(), i) % self.size)
         else:
             bits.append(self.get_clf_hash(item))
         for b in bits:
@@ -96,7 +96,7 @@ class BloomFilter():
         Check for existence of an item in filter
         '''
         for i in range(self.hash_count):
-            digest = mmh3.hash(item, i) % self.size
+            digest = mmh3.hash(item.tostring(), i) % self.size
             if not self.bloom_filter[digest]:
                 return False
         return True

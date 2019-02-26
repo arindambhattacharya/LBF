@@ -1,4 +1,5 @@
 import tflearn
+import tensorflow as tf
 from tflearn.data_utils import shuffle, to_categorical
 from tflearn.layers.core import input_data, dropout, fully_connected
 from tflearn.layers.conv import conv_2d, max_pool_2d
@@ -11,12 +12,13 @@ from sklearn.model_selection import train_test_split
 import numpy as np
 import pickle
 import sys
+import copy
 
-sys.path.append('bloom_classifier')
-import bloom_classifier as bc
+import os
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
 
-sys.path.append('dpbf_classifier')
-import dpbf_classification as dc
+import warnings
+warnings.filterwarnings("ignore") # shouldn't do this
 
 tflearn.config.init_graph(
     seed=None,
@@ -108,7 +110,6 @@ img_aug.add_random_rotation(max_angle=15.)
 # Residual blocks
 # 32 layers: n=5, 56 layers: n=9, 110 layers: n=18
 n = 5
-
 net = tflearn.input_data(
     shape=[None, 32, 32, 3],
     data_preprocessing=img_prep,
@@ -132,7 +133,7 @@ net = tflearn.regression(net, optimizer=mom, loss='categorical_crossentropy')
 
 model = tflearn.DNN(
     net,
-    tensorboard_verbose=3,
+    tensorboard_verbose=0,
     tensorboard_dir='summaries',
     checkpoint_path='models/cifar10',
     max_checkpoints=1,
@@ -157,7 +158,11 @@ model = tflearn.DNN(
 
 ##################################################################################################
 # IA-LBF experiments
+
 # import time
+# sys.path.append('dpbf_classifier')
+# import dpbf_classification as dc
+
 
 # model.load('models/cifar10.model')
 # my_dc = dc.dpbf_logistic(model)
@@ -230,6 +235,8 @@ model = tflearn.DNN(
 ##################################################################################################
 # CA-LBF I experiments
 import time
+sys.path.append('bloom_classifier')
+import bloom_classifier as bc
 
 model.load('models/cifar10.model')
 my_bc = bc.BloomClassifier(model)
@@ -237,21 +244,21 @@ my_bc = bc.BloomClassifier(model)
 model_size = sys.getsizeof(model)
 model_size_uncompressed = sys.getsizeof(tflearn.variables.get_all_variables())
 
-outfile = open('outputs/cifar_calbf1.txt', 'w')
+outfile = open('outputs/cifar_calbf1_run2.txt', 'w')
 
 start = time.time()
 
-my_bc.initialize(X_init, Y_init, n=128, m=1000)
+my_bc.initialize(X_init, Y_init, m=100)
 
 log = 'BF initialization time: {0:.2f} seconds\n'.format(time.time() - start)
 print(log)
 outfile.write(log)
-exit()
+
 log = 'Initial false positive on train data: {0:.6f}\n'.format(my_bc.get_fpr(X_init, Y_init))
 print(log)
 outfile.write(log)
 
-log = 'Initial memory (Bloom filter): {0:.2f} bytes\n'.format(my_dc.get_size())
+log = 'Initial memory (Bloom filter): {0:.2f} bytes\n'.format(my_bc.get_size())
 print(log)
 outfile.write(log)
 
@@ -263,37 +270,56 @@ log = 'Initial memory (Classifier, uncompressed): {0:.2f} bytes\n'.format(model_
 print(log)
 outfile.write(log)
 
-log = 'Initial total memory: {0:.2f} bytes\n'.format(model_size + my_dc.get_size())
+log = 'Initial total memory: {0:.2f} bytes\n'.format(model_size + my_bc.get_size())
+print(log)
+outfile.write(log)
+start1 = time.time()
+
+# model.fit(
+# X_insert,
+# Y_insert,
+# n_epoch=20,
+# shuffle=True,
+# snapshot_epoch=False,
+# snapshot_step=50,
+# validation_set=(X_test_insert, Y_test_insert),
+# show_metric=True,
+# batch_size=128,
+# run_id="cifar10_calbf1")
+
+# model.save('models/cifar10_calbf1.model')
+
+model.load('models/cifar10_calbf1.model')
+
+start2 = time.time()
+
+my_bc.add_data(X_insert, Y_insert, model)
+
+log = 'Average insertion time per 1000 elements: {0:.2f} seconds\n'.format((time.time() - start2) * 1000/ len(X_insert))
 print(log)
 outfile.write(log)
 
-start = time.time()
-
-for x, y in zip(X_insert, Y_insert):
-    if np.allclose(y, np.array([1, 0])):
-        my_dc.insert(x)
-
-log = 'Average insertion time: {0:.2f} seconds\n'.format((time.time() - start) / len(X_insert))
+log = 'Average insertion time per 1000 elements including training: {0:.2f} seconds\n'.format((time.time() - start1) * 1000/ len(X_insert))
 print(log)
 outfile.write(log)
 
-log = 'False positive after insertion (inserted data): {0:.6f}\n'.format(my_dc.get_fpr(X_insert, Y_insert))
+log = 'False positive after insertion (inserted data): {0:.6f}\n'.format(my_bc.get_fpr(X_insert, Y_insert))
 print(log)
 outfile.write(log)
 
-log = 'False positive after insertion (test data): {0:.6f}\n'.format(my_dc.get_fpr(X_test, Y_test))
+log = 'False positive after insertion (test data): {0:.6f}\n'.format(my_bc.get_fpr(X_test, Y_test))
 print(log)
 outfile.write(log)
 
-log = 'False positive after insertion (entire data): {0:.6f}\n'.format(my_dc.get_fpr(np.concatenate((X, X_test)), np.concatenate((Y, Y_test))))
+log = 'False positive after insertion (entire data): {0:.6f}\n'.format(my_bc.get_fpr(np.concatenate((X, X_test)), np.concatenate((Y, Y_test))))
 print(log)
 outfile.write(log)
 
-log = 'Memory after insertion (Bloom filter): {0:.2f} bytes\n'.format(my_dc.get_size())
+log = 'Memory after insertion (Bloom filter): {0:.2f} bytes\n'.format(my_bc.get_size())
 print(log)
 outfile.write(log)
 
-log = 'Total memory after insertion: {0:.2f} bytes\n'.format(model_size + my_dc.get_size())
+log = 'Total memory after insertion: {0:.2f} bytes\n'.format(model_size + my_bc.get_size())
 print(log)
 outfile.write(log)
 
