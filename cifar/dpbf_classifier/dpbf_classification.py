@@ -35,7 +35,7 @@ class dpbf_logistic:
             dpbf.insert(mhash(idx))
 
     def check(self, idx):
-        return np.allclose(self.model.predict(np.array([idx])), np.array([1, 0])) or dpbf.check(mhash(idx))
+        return np.argmax(self.model.predict([x])) == '0' or dpbf.check(mhash(idx))
 
     def get_fpr(self, X, Y):
         fp = len([x for x, y in zip(X, Y) if self.check(x) and np.allclose(y, np.array([0, 1]))])

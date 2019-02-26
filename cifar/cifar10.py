@@ -232,7 +232,7 @@ model = tflearn.DNN(
 import time
 
 model.load('models/cifar10.model')
-my_bc = bc.bloom_classifier(model)
+my_bc = bc.BloomClassifier(model)
 
 model_size = sys.getsizeof(model)
 model_size_uncompressed = sys.getsizeof(tflearn.variables.get_all_variables())
@@ -241,12 +241,12 @@ outfile = open('outputs/cifar_calbf1.txt', 'w')
 
 start = time.time()
 
-my_bc.initialize(X_init, Y_init, n=128)
+my_bc.initialize(X_init, Y_init, n=128, m=1000)
 
 log = 'BF initialization time: {0:.2f} seconds\n'.format(time.time() - start)
 print(log)
 outfile.write(log)
-
+exit()
 log = 'Initial false positive on train data: {0:.6f}\n'.format(my_bc.get_fpr(X_init, Y_init))
 print(log)
 outfile.write(log)
