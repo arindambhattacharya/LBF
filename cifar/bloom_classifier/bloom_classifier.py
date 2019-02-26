@@ -25,24 +25,11 @@ class BloomClassifier(object):
                    2: CA-LBF II - Separate classifier
     """
 
-    def __init__(self, clf=None, method=1, retrain_threshold=1000):
+    def __init__(self, model):
         super(BloomClassifier, self).__init__()
-        if clf:
-            self.CUSTOMCLF = True
-            self.clfs = [clf[1]]
-            self.clf_name = clf[0]
-        else:
-            self.CUSTOMCLF = False
-            logging.info('Using default classifier...')
-            self.clfs = [SGDClassifier(loss='log', max_iter=5, tol=1e-3)]
+        self.model = model
         self.to_be_inserted = []
         self.count = 0
-        self.method = method
-
-        if self.method > 0:
-            self.retrain_threshold = retrain_threshold
-        else:
-            self.retrain_threshold = 1
 
     def initialize(self, X_train, Y_train, n=0, m=1000, k=3):
         if not self.CUSTOMCLF:
@@ -108,11 +95,9 @@ class BloomClassifier(object):
         return self.overflow_filter.check(x)
 
     def get_fpr(self, X, Y):
-        fp = len([x for x, y in zip(X, Y) if self.check(x) and y == '0'])
-        n = len([y for y in Y if y == '0'])
-        if n:
-            return fp / n
-        return 0
+        fp = len([x for x, y in zip(X, Y) if self.check(x) and np.allclose(y, np.array([0, 1]))])
+        n = len([y for y in Y if np.allclose(y, np.array([0, 1]))])
+        return fp / n
 
     def get_size(self):
         return sys.getsizeof(self.clfs) + sys.getsizeof(self.overflow_filter)

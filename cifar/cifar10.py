@@ -21,8 +21,8 @@ import dpbf_classification as dc
 tflearn.config.init_graph(
     seed=None,
     log_device=False,
-    num_cores=4,
-    gpu_memory_fraction=0.25,
+    num_cores=6,
+    gpu_memory_fraction=0.75,
     soft_placement=True)
 
 
@@ -165,7 +165,7 @@ model = tflearn.DNN(
 # model_size = sys.getsizeof(model)
 # model_size_uncompressed = sys.getsizeof(tflearn.variables.get_all_variables())
 
-# outfile = open('cifar_ialbf.txt', 'w')
+# outfile = open('cifar_ialbf_run3.txt', 'w')
 
 # start = time.time()
 
@@ -201,7 +201,7 @@ model = tflearn.DNN(
 #     if np.allclose(y, np.array([1, 0])):
 #         my_dc.insert(x)
 
-# log = 'Average insertion time: {0:.2f} seconds\n'.format((time.time() - start) / len(X_insert))
+# log = 'Average insertion time per 1000 elements: {0:.2f} seconds\n'.format((time.time() - start) * 1000 / len(X_insert))
 # print(log)
 # outfile.write(log)
 
@@ -217,7 +217,7 @@ model = tflearn.DNN(
 # print(log)
 # outfile.write(log)
 
-# log = 'Memory after insertion (Bloom filter): {0:.2f} bytes'.format(my_dc.get_size())
+# log = 'Memory after insertion (Bloom filter): {0:.2f} bytes\n'.format(my_dc.get_size())
 # print(log)
 # outfile.write(log)
 
@@ -232,22 +232,22 @@ model = tflearn.DNN(
 import time
 
 model.load('models/cifar10.model')
-my_dc = dc.dpbf_logistic(model)
+my_bc = bc.bloom_classifier(model)
 
 model_size = sys.getsizeof(model)
 model_size_uncompressed = sys.getsizeof(tflearn.variables.get_all_variables())
 
-outfile = open('cifar_ialbf.txt', 'w')
+outfile = open('outputs/cifar_calbf1.txt', 'w')
 
 start = time.time()
 
-my_dc.initialize(X_init, Y_init, n=128)
+my_bc.initialize(X_init, Y_init, n=128)
 
-log = 'DPBF initialization time: {0:.2f} seconds\n'.format(time.time() - start)
+log = 'BF initialization time: {0:.2f} seconds\n'.format(time.time() - start)
 print(log)
 outfile.write(log)
 
-log = 'Initial false positive on train data: {0:.6f}\n'.format(my_dc.get_fpr(X_init, Y_init))
+log = 'Initial false positive on train data: {0:.6f}\n'.format(my_bc.get_fpr(X_init, Y_init))
 print(log)
 outfile.write(log)
 
