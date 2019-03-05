@@ -1,0 +1,13 @@
+BF initialization time: 20.39 seconds
+Initial false positive on train data: 0.013092
+Initial memory (Bloom filter): 56.00 bytes
+Initial memory (Classifier, compressed): 56.00 bytes
+Initial memory (Classifier, uncompressed): 488.00 bytes
+Initial total memory: 112.00 bytes
+Average insertion time per 1000 elements: 1.70 seconds
+Average insertion time per 1000 elements including training: 5.49 seconds
+False positive after insertion (inserted data): 0.045806
+False positive after insertion (test data): 0.046992
+False positive after insertion (entire data): 0.047178
+Memory after insertion (Bloom filter): 56.00 bytes
+Total memory after insertion: 112.00 bytes
