@@ -5,6 +5,11 @@ cifar/models/
 cifar/summaries/
 
 
+mnist/mnist/
+mnist/models/
+mnist/summaries/
+
+
 # Python
 
 # Byte-compiled / optimized / DLL files
