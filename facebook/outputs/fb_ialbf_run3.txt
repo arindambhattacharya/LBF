@@ -1,0 +1,11 @@
+DPBF initialization time: 0.04 seconds
+Initial false positive on train data: 0.012552
+Initial memory (Bloom filter): 1298.00 bytes
+Initial memory (Classifier, compressed): 56.00 bytes
+Initial total memory: 1354.00 bytes
+Average insertion time per 1000 elements: 0.02 seconds
+False positive after insertion (inserted data): 0.013514
+False positive after insertion (test data): 0.006438
+False positive after insertion (entire data): 0.011357
+Memory after insertion (Bloom filter): 1298.00 bytes
+Total memory after insertion: 1354.00 bytes
