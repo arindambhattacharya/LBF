@@ -33,9 +33,8 @@ def ca1(data):
 
     my_bc = bc.BloomClassifier(model)
 
-    outfile = open("outputs/fb_calbf1_run1.txt", "w")
     start = time.time()
-    my_bc.initialize(X_init, Y_init, m=50)
+    my_bc.initialize(X_init, Y_init, m=32)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -79,9 +78,8 @@ def ca2(data):
 
     my_bc = bc.BloomClassifier(model)
 
-    outfile = open("outputs/fb_calbf1_run1.txt", "w")
     start = time.time()
-    my_bc.initialize(X_init, Y_init, m=50)
+    my_bc.initialize(X_init, Y_init, m=32)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -126,7 +124,6 @@ def ia(data):
 
     my_dc = dc.dpbf_logistic(model)
 
-    outfile = open("outputs/fb_calbf1_run1.txt", "w")
     start = time.time()
     my_dc.initialize(X_init, Y_init, n=32)
 
@@ -160,6 +157,48 @@ def ia(data):
     return (insert_fps, insert_times, insert_mems)
 
 
+def base(data):
+    X_init, Y_init, X_inserts, Y_inserts = data
+    start = time.time()
+
+    sys.path.append("bloom_classifier")
+    from bloom_classifier import bloom_filter
+
+    my_bf = bloom_filter.BloomFilter(m=32)
+    start = time.time()
+    for x, y in zip(X_init, Y_init):
+        if y:
+            my_bf.insert(x)
+    init_time = (time.time() - start) / len(X_init)
+    init_fp = sum([my_bf.check(x) for x, y in zip(X_init, Y_init) if not y])
+    init_mem = my_bf.m
+
+    insert_fps = []
+    insert_mems = []
+    insert_times = []
+
+    insert_fps.append(init_fp)
+    insert_mems.append(init_mem)
+    insert_times.append(init_time)
+
+    entire_X = X_init
+    entire_Y = Y_init
+
+    for X_insert, Y_insert in zip(X_inserts, Y_inserts):
+        entire_X = np.concatenate((entire_X, X_insert))
+        entire_Y = np.concatenate((entire_Y, Y_insert))
+
+        start = time.time()
+        for x, y in zip(X_insert, Y_insert):
+            if y:
+                my_bf.insert(x)
+        insert_times.append((time.time() - start) / len(X_insert))
+        insert_fps.append(my_dc.get_fpr(entire_X, entire_Y))
+        insert_mems.append(my_dc.get_size())
+
+    return (insert_fps, insert_times, insert_mems)
+
+
 if __name__ == "__main__":
     ds = pd.read_pickle("facebook_checkin.pkl")
     X = ds.drop(["place_id"], axis=1)
@@ -167,40 +206,71 @@ if __name__ == "__main__":
     X = X.to_numpy()
     Y = ds["place_id"].to_numpy()
     N = len(X) // 2
-    shuffle_indices = np.arange(len(X))
-    np.random.shuffle(shuffle_indices)
-    X = X[shuffle_indices]
-    Y = Y[shuffle_indices]
-    X_init = X[:N]
-    Y_init = Y[:N]
-    X_inserts = np.array_split(X[N:], 10)
-    Y_inserts = np.array_split(Y[N:], 10)
 
-    data = (X_init, Y_init, X_inserts, Y_inserts)
-    print("Running CA1")
-    ca1_fps, ca1_times, ca1_mems = ca1(data)
-    print("Running CA2")
-    ca2_fps, ca2_times, ca2_mems = ca2(data)
-    print("Running IA")
-    ia_fps, ia_times, ia_mems = ia(data)
+    ca1_fps, ca1_times, ca1_mems = [], [], []
+    ca2_fps, ca2_times, ca2_mems = [], [], []
+    ia_fps, ia_times, ia_mems = [], [], []
 
-    plt.plot(ca1_fps, label="CA 1")
-    plt.plot(ca2_fps, label="CA 2")
-    plt.plot(ia_fps, label="IA")
+    for i in range(6):
+        shuffle_indices = np.arange(len(X))
+        np.random.shuffle(shuffle_indices)
+        X = X[shuffle_indices]
+        Y = Y[shuffle_indices]
+        X_init = X[:N]
+        Y_init = Y[:N]
+        X_inserts = np.array_split(X[N:], 10)
+        Y_inserts = np.array_split(Y[N:], 10)
+
+        data = (X_init, Y_init, X_inserts, Y_inserts)
+
+        print("Running CA1")
+        fps, times, mems = ca1(data)
+        if i:
+            ca1_fps.append(fps)
+            ca1_times.append(times)
+            ca1_mems.append(mems)
+
+        print("Running CA2")
+        fps, times, mems = ca2(data)
+        if i:
+            ca2_fps.append(fps)
+            ca2_times.append(times)
+            ca2_mems.append(mems)
+
+        print("Running IA")
+        fps, times, mems = ia(data)
+        if i:
+            ia_fps.append(fps)
+            ia_times.append(times)
+            ia_mems.append(mems)
+
+    ca1_fps = np.array(ca1_fps)
+    ca1_times = np.array(ca1_times)
+    ca1_mems = np.array(ca1_mems)
+    ca2_fps = np.array(ca2_fps)
+    ca2_times = np.array(ca2_times)
+    ca2_mems = np.array(ca2_mems)
+    ia_fps = np.array(ia_fps)
+    ia_times = np.array(ia_times)
+    ia_mems = np.array(ia_mems)
+
+    plt.plot(ca1_fps.mean(axis=0), label="CA 1")
+    plt.plot(ca2_fps.mean(axis=0), label="CA 2")
+    plt.plot(ia_fps.mean(axis=0), label="IA")
     plt.title("FPS")
     plt.legend()
     plt.savefig("./plots/fpr.png")
 
-    plt.plot(ca1_times, label="CA 1")
-    plt.plot(ca2_times, label="CA 2")
-    plt.plot(ia_times, label="IA")
+    plt.plot(ca1_times.mean(axis=0), label="CA 1")
+    plt.plot(ca2_times.mean(axis=0), label="CA 2")
+    plt.plot(ia_times.mean(axis=0), label="IA")
     plt.title("Time")
     plt.legend()
     plt.savefig("./plots/time.png")
 
-    plt.plot(ca1_mems, label="CA 1")
-    plt.plot(ca2_mems, label="CA 2")
-    plt.plot(ia_mems, label="IA")
+    plt.plot(ca1_mems.mean(axis=0), label="CA 1")
+    plt.plot(ca2_mems.mean(axis=0), label="CA 2")
+    plt.plot(ia_mems.mean(axis=0), label="IA")
     plt.title("Memory")
     plt.legend()
     plt.savefig("./plots/mem.png")
