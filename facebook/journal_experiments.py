@@ -162,7 +162,7 @@ def base(data):
     start = time.time()
 
     sys.path.append("bloom_classifier")
-    from bloom_classifier import bloom_filter
+    import bloom_filter
 
     my_bf = bloom_filter.BloomFilter(n=len(X_init), p=0.001)
     start = time.time()
