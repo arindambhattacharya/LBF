@@ -41,7 +41,7 @@ class BloomClassifier(object):
                 break
             self.overflow_filter.insert(x)
 
-    def add_data(self, x, y, model):
+    def add_data(self, x, y, model=None):
         if model:
             self.models.append(model)
         for i in range(len(x)):
