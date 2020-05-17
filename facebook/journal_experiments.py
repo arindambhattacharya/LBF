@@ -17,6 +17,8 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 warnings.filterwarnings("ignore")  # shouldn't do this
 
+sns.set()
+
 
 def ca1(data):
     sys.path.append("bloom_classifier")
@@ -186,16 +188,19 @@ if __name__ == "__main__":
     plt.plot(ca2_fps, label="CA 2")
     plt.plot(ia_fps, label="IA")
     plt.title("FPS")
+    plt.legend()
     plt.savefig("./plots/fpr.png")
 
     plt.plot(ca1_times, label="CA 1")
     plt.plot(ca2_times, label="CA 2")
     plt.plot(ia_times, label="IA")
     plt.title("Time")
+    plt.legend()
     plt.savefig("./plots/time.png")
 
     plt.plot(ca1_mems, label="CA 1")
     plt.plot(ca2_mems, label="CA 2")
     plt.plot(ia_mems, label="IA")
     plt.title("Memory")
+    plt.legend()
     plt.savefig("./plots/mem.png")
