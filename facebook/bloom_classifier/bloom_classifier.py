@@ -28,7 +28,7 @@ class BloomClassifier(object):
     def initialize(self, x, y, n=0, m=1000, k=3, p=0.01):
         self.overflow_filter = bf.BloomFilter(m, n, k, p)
         for i in range(len(x)):
-            if y[i] == 1:
+            if y[i]:
                 self.insert_one(x[i])
 
     def insert(self, X):
@@ -37,7 +37,7 @@ class BloomClassifier(object):
 
     def insert_one(self, x):
         for model in self.models:
-            if model.predict([x]) == "1":
+            if model.predict([x]):
                 break
             self.overflow_filter.insert(x)
 
@@ -45,12 +45,12 @@ class BloomClassifier(object):
         if model:
             self.models.append(model)
         for i in range(len(x)):
-            if y[i] == "1":
+            if y[i]:
                 self.insert_one(x[i])
 
     def check(self, x):
         for model in self.models:
-            if model.predict([x]) == "1":
+            if model.predict([x]):
                 return True
         return self.overflow_filter.check(x)
 
