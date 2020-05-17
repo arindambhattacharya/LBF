@@ -126,7 +126,7 @@ def ia(data):
 
     outfile = open("outputs/fb_calbf1_run1.txt", "w")
     start = time.time()
-    my_dc.initialize(X_init, Y_init, m=50)
+    my_dc.initialize(X_init, Y_init, n=32)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
