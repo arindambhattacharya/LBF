@@ -277,6 +277,7 @@ if __name__ == "__main__":
     plt.plot(base_fps.mean(axis=0), label="Base")
     plt.title("FPS")
     plt.legend()
+    plt.tight_layout()
     plt.savefig("./plots/fpr.png")
 
     plt.figure()
@@ -286,6 +287,7 @@ if __name__ == "__main__":
     plt.plot(base_times.mean(axis=0), label="Base")
     plt.title("Time")
     plt.legend()
+    plt.tight_layout()
     plt.savefig("./plots/time.png")
 
     plt.figure()
@@ -295,4 +297,5 @@ if __name__ == "__main__":
     plt.plot(base_mems.mean(axis=0), label="Base")
     plt.title("Memory")
     plt.legend()
+    plt.tight_layout()
     plt.savefig("./plots/mem.png")
