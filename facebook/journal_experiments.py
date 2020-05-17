@@ -248,7 +248,7 @@ if __name__ == "__main__":
             ia_mems.append(mems)
 
         print("Running Base")
-        fps, times, mems = ia(data)
+        fps, times, mems = base(data)
         if i:
             base_fps.append(fps)
             base_times.append(times)
