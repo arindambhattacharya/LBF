@@ -30,7 +30,7 @@ def ca1(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
     my_bc = bc.BloomClassifier(model)
     start = time.time()
@@ -75,7 +75,7 @@ def ca2(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -121,7 +121,7 @@ def ia(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
