@@ -17,7 +17,7 @@ os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
 warnings.filterwarnings("ignore")  # shouldn't do this
 
-sns.set()
+sns.set(context="talk")
 
 
 def ca1(data):
@@ -267,6 +267,7 @@ if __name__ == "__main__":
     base_times = np.array(base_times)
     base_mems = np.array(base_mems)
 
+    plt.figure()
     plt.plot(ca1_fps.mean(axis=0), label="CA 1")
     plt.plot(ca2_fps.mean(axis=0), label="CA 2")
     plt.plot(ia_fps.mean(axis=0), label="IA")
@@ -275,6 +276,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig("./plots/fpr.png")
 
+    plt.figure()
     plt.plot(ca1_times.mean(axis=0), label="CA 1")
     plt.plot(ca2_times.mean(axis=0), label="CA 2")
     plt.plot(ia_times.mean(axis=0), label="IA")
@@ -283,6 +285,7 @@ if __name__ == "__main__":
     plt.legend()
     plt.savefig("./plots/time.png")
 
+    plt.figure()
     plt.plot(ca1_mems.mean(axis=0), label="CA 1")
     plt.plot(ca2_mems.mean(axis=0), label="CA 2")
     plt.plot(ia_mems.mean(axis=0), label="IA")
