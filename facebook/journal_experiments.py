@@ -156,22 +156,24 @@ def ia(data):
 
 
 def base(data):
-    X_init, Y_init, X_inserts, Y_inserts = data
-    start = time.time()
-
     sys.path.append("bloom_classifier")
-    import bloom_filter
+    sys.path.append("dpbf_classifier")
 
-    my_bf = bloom_filter.BloomFilter(n=len(X_init), p=0.001)
+    import bloom_classifier as bc
+
+    X_init, Y_init, X_inserts, Y_inserts = data
+
+    model = SGDClassifier(loss="log")
+    model.fit(X_init, Y_init)
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    my_bc = bc.BloomClassifier(model)
+
     start = time.time()
-    for x, y in zip(X_init, Y_init):
-        if y:
-            my_bf.insert(x)
+    my_bc.initialize(X_init, Y_init, m=model_fp, p=0.001)
+
     init_time = (time.time() - start) / len(X_init)
-    init_fp = sum([my_bf.check(x) for x, y in zip(X_init, Y_init) if not y]) / len(
-        X_init
-    )
-    init_mem = my_bf.size
+    init_fp = my_bc.get_fpr(X_init, Y_init)
+    init_mem = my_bc.get_size()
 
     insert_fps = []
     insert_mems = []
@@ -187,17 +189,11 @@ def base(data):
     for X_insert, Y_insert in zip(X_inserts, Y_inserts):
         entire_X = np.concatenate((entire_X, X_insert))
         entire_Y = np.concatenate((entire_Y, Y_insert))
-
         start = time.time()
-        for x, y in zip(X_insert, Y_insert):
-            if y:
-                my_bf.insert(x)
+        my_bc.add_data(X_insert, Y_insert)
         insert_times.append((time.time() - start) / len(X_insert))
-        insert_fps.append(
-            sum([my_bf.check(x) for x, y in zip(entire_X, entire_Y) if not y])
-            / len(entire_X)
-        )
-        insert_mems.append(my_bf.size)
+        insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
+        insert_mems.append(my_bc.get_size())
 
     return (insert_fps, insert_times, insert_mems)
 

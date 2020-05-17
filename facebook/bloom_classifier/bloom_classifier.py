@@ -37,20 +37,20 @@ class BloomClassifier(object):
 
     def insert_one(self, x):
         for model in self.models:
-            pred = model.predict([x])
-            if pred:
+            if model.predict([x]) == "1":
                 break
             self.overflow_filter.insert(x)
 
     def add_data(self, x, y, model):
-        self.models.append(model)
+        if model:
+            self.models.append(model)
         for i in range(len(x)):
-            if y[i] == 1:
+            if y[i] == "1":
                 self.insert_one(x[i])
 
     def check(self, x):
         for model in self.models:
-            if model.predict([x]):
+            if model.predict([x]) == "1":
                 return True
         return self.overflow_filter.check(x)
 
