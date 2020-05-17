@@ -119,11 +119,11 @@ def ia(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 10
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
-    my_dc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_dc.initialize(X_init, Y_init, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
