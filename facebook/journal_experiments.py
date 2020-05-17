@@ -175,8 +175,11 @@ if __name__ == "__main__":
     Y_inserts = np.array_split(Y[N:], 10)
 
     data = (X_init, Y_init, X_inserts, Y_inserts)
+    print("Running CA1")
     ca1_fps, ca1_times, ca1_mems = ca1(data)
+    print("Running CA2")
     ca2_fps, ca2_times, ca2_mems = ca2(data)
+    print("Running IA")
     ia_fps, ia_times, ia_mems = ia(data)
 
     plt.plot(ca1_fps, label="CA 1")
