@@ -28,7 +28,7 @@ def ca1(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == "0"] if model.predict([x])]) + 1
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
     my_bc = bc.BloomClassifier(model)
     start = time.time()
@@ -73,7 +73,7 @@ def ca2(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == "0"] if model.predict([x])]) + 1
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -119,7 +119,7 @@ def ia(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == "0"] if model.predict([x])]) + 10
+    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 10
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
@@ -169,7 +169,7 @@ def base(data):
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
-    my_bc.initialize(X_init, Y_init, m=model_fp, p=0.001)
+    my_bc.initialize(X_init, Y_init, m=model_fp, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -204,7 +204,7 @@ if __name__ == "__main__":
     X = (X - X.mean()) / X.std()
     X = X.to_numpy()
     Y = ds["place_id"].to_numpy()
-    N = len(X) // 2
+    N = len(X) // 3
 
     ca1_fps, ca1_times, ca1_mems = [], [], []
     ca2_fps, ca2_times, ca2_mems = [], [], []
