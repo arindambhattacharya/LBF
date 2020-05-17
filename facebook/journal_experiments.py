@@ -149,7 +149,7 @@ def ia(data):
 
         start = time.time()
         for x, y in zip(X_insert, Y_insert):
-            if Y_insert:
+            if y:
                 my_dc.insert(x)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_dc.get_fpr(entire_X, entire_Y))
