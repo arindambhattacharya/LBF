@@ -30,11 +30,11 @@ def ca1(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
+    model_fp = len([1 for x in X_init[Y_init==0] if model.predict(x)])
 
     my_bc = bc.BloomClassifier(model)
-
     start = time.time()
-    my_bc.initialize(X_init, Y_init, m=32)
+    my_bc.initialize(X_init, Y_init, m=model_fp, p=0.001)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -75,11 +75,11 @@ def ca2(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-
-    my_bc = bc.BloomClassifier(model)
+    model_fp = len([1 for x in X_init[Y_init==0] if model.predict(x)])
+    my_bc = bc.BloomClassifier(model, m=model_fp, p=0.001)
 
     start = time.time()
-    my_bc.initialize(X_init, Y_init, m=32)
+    my_bc.initialize(X_init, Y_init, n=)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -121,11 +121,11 @@ def ia(data):
 
     model = SGDClassifier(loss="log")
     model.fit(X_init, Y_init)
-
+    model_fp = len([1 for x in X_init[Y_init==0] if model.predict(x)])
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
-    my_dc.initialize(X_init, Y_init, n=32)
+    my_dc.initialize(X_init, Y_init, n=model_fp, p=0.001)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -164,7 +164,7 @@ def base(data):
     sys.path.append("bloom_classifier")
     from bloom_classifier import bloom_filter
 
-    my_bf = bloom_filter.BloomFilter(m=32)
+    my_bf = bloom_filter.BloomFilter(n=len(X_init), p=0.001)
     start = time.time()
     for x, y in zip(X_init, Y_init):
         if y:
