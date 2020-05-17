@@ -193,8 +193,10 @@ def base(data):
             if y:
                 my_bf.insert(x)
         insert_times.append((time.time() - start) / len(X_insert))
-        insert_fps.append(my_dc.get_fpr(entire_X, entire_Y))
-        insert_mems.append(my_dc.get_size())
+        insert_fps.append(
+            sum([my_bf.check(x) for x, y in zip(entire_X, entire_Y) if not y])
+        )
+        insert_mems.append(my_bf.m)
 
     return (insert_fps, insert_times, insert_mems)
 
@@ -210,6 +212,7 @@ if __name__ == "__main__":
     ca1_fps, ca1_times, ca1_mems = [], [], []
     ca2_fps, ca2_times, ca2_mems = [], [], []
     ia_fps, ia_times, ia_mems = [], [], []
+    base_fps, base_times, base_mems = [], [], []
 
     for i in range(6):
         shuffle_indices = np.arange(len(X))
@@ -244,6 +247,13 @@ if __name__ == "__main__":
             ia_times.append(times)
             ia_mems.append(mems)
 
+        print("Running Base")
+        fps, times, mems = ia(data)
+        if i:
+            base_fps.append(fps)
+            base_times.append(times)
+            base_mems.append(mems)
+
     ca1_fps = np.array(ca1_fps)
     ca1_times = np.array(ca1_times)
     ca1_mems = np.array(ca1_mems)
@@ -253,10 +263,14 @@ if __name__ == "__main__":
     ia_fps = np.array(ia_fps)
     ia_times = np.array(ia_times)
     ia_mems = np.array(ia_mems)
+    base_fps = np.array(base_fps)
+    base_times = np.array(base_times)
+    base_mems = np.array(base_mems)
 
     plt.plot(ca1_fps.mean(axis=0), label="CA 1")
     plt.plot(ca2_fps.mean(axis=0), label="CA 2")
     plt.plot(ia_fps.mean(axis=0), label="IA")
+    plt.plot(base_fps.mean(axis=0), label="Base")
     plt.title("FPS")
     plt.legend()
     plt.savefig("./plots/fpr.png")
@@ -264,6 +278,7 @@ if __name__ == "__main__":
     plt.plot(ca1_times.mean(axis=0), label="CA 1")
     plt.plot(ca2_times.mean(axis=0), label="CA 2")
     plt.plot(ia_times.mean(axis=0), label="IA")
+    plt.plot(base_times.mean(axis=0), label="Base")
     plt.title("Time")
     plt.legend()
     plt.savefig("./plots/time.png")
@@ -271,6 +286,7 @@ if __name__ == "__main__":
     plt.plot(ca1_mems.mean(axis=0), label="CA 1")
     plt.plot(ca2_mems.mean(axis=0), label="CA 2")
     plt.plot(ia_mems.mean(axis=0), label="IA")
+    plt.plot(base_mems.mean(axis=0), label="Base")
     plt.title("Memory")
     plt.legend()
     plt.savefig("./plots/mem.png")
