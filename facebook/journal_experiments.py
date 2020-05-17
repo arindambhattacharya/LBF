@@ -171,7 +171,7 @@ def base(data):
             my_bf.insert(x)
     init_time = (time.time() - start) / len(X_init)
     init_fp = sum([my_bf.check(x) for x, y in zip(X_init, Y_init) if not y])
-    init_mem = my_bf.m
+    init_mem = my_bf.size
 
     insert_fps = []
     insert_mems = []
@@ -196,7 +196,7 @@ def base(data):
         insert_fps.append(
             sum([my_bf.check(x) for x, y in zip(entire_X, entire_Y) if not y])
         )
-        insert_mems.append(my_bf.m)
+        insert_mems.append(my_bf.size)
 
     return (insert_fps, insert_times, insert_mems)
 
