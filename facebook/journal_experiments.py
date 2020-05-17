@@ -106,7 +106,6 @@ def ca2(data):
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
         insert_mems.append(my_bc.get_size())
 
-    print(insert_fps, insert_times, insert_mems)
     return (insert_fps, insert_times, insert_mems)
 
 
@@ -153,7 +152,6 @@ def ia(data):
         insert_fps.append(my_dc.get_fpr(entire_X, entire_Y))
         insert_mems.append(my_dc.get_size())
 
-    print(insert_fps, insert_times, insert_mems)
     return (insert_fps, insert_times, insert_mems)
 
 
@@ -201,7 +199,6 @@ def base(data):
         )
         insert_mems.append(my_bf.size)
 
-    print(insert_fps, insert_times, insert_mems)
     return (insert_fps, insert_times, insert_mems)
 
 
