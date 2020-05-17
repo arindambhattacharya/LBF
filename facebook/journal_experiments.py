@@ -125,7 +125,6 @@ def ia(data):
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
-    print(model_fp)
     my_dc.initialize(X_init, Y_init, n=model_fp, p=0.001)
 
     init_time = (time.time() - start) / len(X_init)
