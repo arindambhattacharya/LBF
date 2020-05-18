@@ -32,16 +32,12 @@ def ca1(data, clf):
     except Exception:
         model = clf(warm_start=True)
 
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
     start = time.time()
     model.fit(X_init, Y_init)
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
 
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init LBF")
     my_bc = bc.BloomClassifier(model)
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -63,9 +59,7 @@ def ca1(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Insert training")
         model.fit(X_insert, Y_insert)
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -87,10 +81,8 @@ def ca2(data, clf):
     except Exception:
         model = clf(warm_start=False)
 
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
     start = time.time()
     model.fit(X_init, Y_init)
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_bc = bc.BloomClassifier(model)
 
@@ -120,9 +112,7 @@ def ca2(data, clf):
             model = model = clf(loss="hinge", warm_start=False)
         except Exception:
             model = clf(warm_start=False)
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Insert traing")
         model.fit(X_insert, Y_insert)
-        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -145,9 +135,7 @@ def ia(data, clf):
         model = clf(warm_start=False)
 
     start = time.time()
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
     model.fit(X_init, Y_init)
-    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
