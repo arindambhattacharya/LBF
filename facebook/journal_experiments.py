@@ -201,17 +201,13 @@ def base(data):
 if __name__ == "__main__":
     ds = pd.read_pickle("facebook_checkin.pkl")
     X = ds.drop(["place_id"], axis=1)
-    X = (X - X.mean()) / X.std()
     X = X.to_numpy()
     Y = ds["place_id"].to_numpy()
-    N = len(X) // 3
+    N = len(X) // 2
 
-    ca1_fps, ca1_times, ca1_mems = [], [], []
-    ca2_fps, ca2_times, ca2_mems = [], [], []
-    ia_fps, ia_times, ia_mems = [], [], []
-    base_fps, base_times, base_mems = [], [], []
+    df = pd.DataFrame()
 
-    for i in range(6):
+    for i in range(10):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
@@ -226,70 +222,71 @@ if __name__ == "__main__":
         print("Running CA1")
         fps, times, mems = ca1(data)
         if i:
-            ca1_fps.append(fps)
-            ca1_times.append(times)
-            ca1_mems.append(mems)
+            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "CA-LBF I",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": time,
+                        "Memory": mem,
+                    },
+                    ignore_index=True,
+                )
 
         print("Running CA2")
         fps, times, mems = ca2(data)
         if i:
-            ca2_fps.append(fps)
-            ca2_times.append(times)
-            ca2_mems.append(mems)
+            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "CA-LBF I",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": time,
+                        "Memory": mem,
+                    },
+                    ignore_index=True,
+                )
 
         print("Running IA")
         fps, times, mems = ia(data)
         if i:
-            ia_fps.append(fps)
-            ia_times.append(times)
-            ia_mems.append(mems)
+            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "CA-LBF I",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": time,
+                        "Memory": mem,
+                    },
+                    ignore_index=True,
+                )
 
         print("Running Base")
         fps, times, mems = base(data)
         if i:
-            base_fps.append(fps)
-            base_times.append(times)
-            base_mems.append(mems)
+            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "CA-LBF I",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": time,
+                        "Memory": mem,
+                    },
+                    ignore_index=True,
+                )
 
-    ca1_fps = np.array(ca1_fps)
-    ca1_times = np.array(ca1_times)
-    ca1_mems = np.array(ca1_mems)
-    ca2_fps = np.array(ca2_fps)
-    ca2_times = np.array(ca2_times)
-    ca2_mems = np.array(ca2_mems)
-    ia_fps = np.array(ia_fps)
-    ia_times = np.array(ia_times)
-    ia_mems = np.array(ia_mems)
-    base_fps = np.array(base_fps)
-    base_times = np.array(base_times)
-    base_mems = np.array(base_mems)
-
-    plt.figure()
-    plt.plot(ca1_fps.mean(axis=0), label="CA 1", marker="s")
-    plt.plot(ca2_fps.mean(axis=0), label="CA 2", marker="x")
-    plt.plot(ia_fps.mean(axis=0), label="IA", marker="o")
-    plt.plot(base_fps.mean(axis=0), label="Base", marker="+")
-    plt.title("FPS")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("./plots/fpr.png")
-
-    plt.figure()
-    plt.plot(ca1_times.mean(axis=0), label="CA 1", marker="s")
-    plt.plot(ca2_times.mean(axis=0), label="CA 2", marker="x")
-    plt.plot(ia_times.mean(axis=0), label="IA", marker="o")
-    plt.plot(base_times.mean(axis=0), label="Base", marker="+")
-    plt.title("Time")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("./plots/time.png")
-
-    plt.figure()
-    plt.plot(ca1_mems.mean(axis=0), label="CA 1", marker="s")
-    plt.plot(ca2_mems.mean(axis=0), label="CA 2", marker="x")
-    plt.plot(ia_mems.mean(axis=0), label="IA", marker="o")
-    plt.plot(base_mems.mean(axis=0), label="Base", marker="+")
-    plt.title("Memory")
-    plt.legend()
-    plt.tight_layout()
-    plt.savefig("./plots/mem.png")
+    melted_df = df.melt(
+        id_vars=["Method", "Batch", "Run"], value_vars=["FPS", "Time", "Memory"]
+    )
+    g = sns.relplot(
+        "Batch", "value", col="variable", hue="Method", kind="line", data=melted_df
+    )
+    g.savefig("plots/fb_metrics.png")
