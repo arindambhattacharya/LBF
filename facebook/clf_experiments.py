@@ -3,15 +3,16 @@ import os
 import sys
 import time
 import warnings
+from datetime import datetime
 
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
-from sklearn.linear_model import LogisticRegression
-from sklearn.ensemble import RandomForestClassifier
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -225,6 +226,7 @@ if __name__ == "__main__":
             )
         )
         for name, clf in clfs.items():
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {name}")
             print("Running CA1")
             fps, times, mems = ca1(data, clf)
             if i:
