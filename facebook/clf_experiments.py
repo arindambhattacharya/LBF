@@ -239,8 +239,8 @@ if __name__ == "__main__":
         data = (X_init, Y_init, X_inserts, Y_inserts)
         clfs = dict(
             zip(
-                ["LR", "NN", "RF"],
-                [LogisticRegression, MLPClassifier, RandomForestClassifier],
+                ["RF", "NN", "LR"],
+                [RandomForestClassifier, MLPClassifier, LogisticRegression],
             )
         )
         for name, clf in clfs.items():
@@ -312,7 +312,9 @@ if __name__ == "__main__":
                         },
                         ignore_index=True,
                     )
+    df.to_csv("./outputs/fb_output.csv")
 
+    print("Plotting")
     melted_df = df.melt(
         id_vars=["Method", "Batch", "Run", "Classifier"],
         value_vars=["FPS", "Time", "Memory"],
