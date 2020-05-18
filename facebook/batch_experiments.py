@@ -28,7 +28,7 @@ def ca1(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(len([1 for x in X_init[Y_init == 0] if model.predict([x])]), 100)
 
     my_bc = bc.BloomClassifier(model)
     start = time.time()
@@ -72,10 +72,10 @@ def ca2(data):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     model = LogisticRegression(
-        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+        warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(len([1 for x in X_init[Y_init == 0] if model.predict([x])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -101,7 +101,9 @@ def ca2(data):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model = LogisticRegression(warm_start=False)
+        model = LogisticRegression(
+            warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
+        )
         model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
@@ -120,14 +122,14 @@ def ia(data):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     model = LogisticRegression(
-        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+        warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
+    model_fp = max(len([1 for x in X_init[Y_init == 0] if model.predict([x])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
-    my_dc.initialize(X_init, Y_init, n=1024, p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -171,7 +173,7 @@ def base(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(len([1 for x in X_init[Y_init == 0] if model.predict([x])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -301,6 +303,6 @@ if __name__ == "__main__":
         data=melted_df,
         markers=True,
         facet_kws={"sharey": False},
-        ci=80,
+        ci=95,
     )
     g.savefig("plots/fb_metrics.png")
