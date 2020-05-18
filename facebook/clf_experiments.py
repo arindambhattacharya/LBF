@@ -32,7 +32,7 @@ def ca1(data, clf):
     except Exception:
         model = clf(warm_start=True)
 
-    model.fit(X_init, Y_init)
+    model.fit(X_init, Y_init, n_jobs=-1)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
     my_bc = bc.BloomClassifier(model)
@@ -59,7 +59,7 @@ def ca1(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model.fit(X_insert, Y_insert)
+        model.fit(X_insert, Y_insert, n_jobs=-1)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -80,7 +80,7 @@ def ca2(data, clf):
         model = clf(n_estimators=10, max_depth=2, warm_start=False)
     except Exception:
         model = clf(warm_start=False)
-    model.fit(X_init, Y_init)
+    model.fit(X_init, Y_init, n_jobs=-1)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
@@ -111,7 +111,7 @@ def ca2(data, clf):
             model = clf(n_estimators=10, max_depth=2, warm_start=False)
         except Exception:
             model = clf(warm_start=False)
-        model.fit(X_insert, Y_insert)
+        model.fit(X_insert, Y_insert, n_jobs=-1)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -132,7 +132,8 @@ def ia(data, clf):
         model = clf(n_estimators=10, max_depth=2, warm_start=False)
     except Exception:
         model = clf(warm_start=False)
-    model.fit(X_init, Y_init)
+
+    model.fit(X_init, Y_init, n_jobs=-1)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
 
@@ -181,7 +182,8 @@ def base(data, clf):
         model = clf(n_estimators=10, max_depth=2, warm_start=False)
     except Exception:
         model = clf(warm_start=False)
-    model.fit(X_init, Y_init)
+
+    model.fit(X_init, Y_init, n_jobs=-1)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
@@ -224,7 +226,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(10):
+    for i in range(4):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
