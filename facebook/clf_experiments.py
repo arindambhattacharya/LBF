@@ -38,8 +38,10 @@ def ca1(data, clf):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
 
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init LBF")
     my_bc = bc.BloomClassifier(model)
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
