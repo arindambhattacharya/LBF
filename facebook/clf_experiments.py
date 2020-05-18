@@ -28,11 +28,11 @@ def ca1(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=True)
+        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=True)
+        model = clf(warm_start=True, n_jobs=-1)
 
-    model.fit(X_init, Y_init, n_jobs=-1)
+    model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
     my_bc = bc.BloomClassifier(model)
@@ -59,7 +59,7 @@ def ca1(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model.fit(X_insert, Y_insert, n_jobs=-1)
+        model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -77,10 +77,10 @@ def ca2(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=False)
+        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False)
-    model.fit(X_init, Y_init, n_jobs=-1)
+        model = clf(warm_start=False, n_jobs=-1)
+    model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
@@ -108,10 +108,10 @@ def ca2(data, clf):
 
         start = time.time()
         try:
-            model = clf(n_estimators=10, max_depth=2, warm_start=False)
+            model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
         except Exception:
-            model = clf(warm_start=False)
-        model.fit(X_insert, Y_insert, n_jobs=-1)
+            model = clf(warm_start=False, n_jobs=-1)
+        model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -129,11 +129,11 @@ def ia(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=False)
+        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False)
+        model = clf(warm_start=False, n_jobs=-1)
 
-    model.fit(X_init, Y_init, n_jobs=-1)
+    model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
 
@@ -179,11 +179,11 @@ def base(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=False)
+        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False)
+        model = clf(warm_start=False, n_jobs=-1)
 
-    model.fit(X_init, Y_init, n_jobs=-1)
+    model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
