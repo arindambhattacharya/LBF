@@ -36,7 +36,7 @@ def ca1(data, clf):
     start = time.time()
     model.fit(X_init, Y_init)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
 
     my_bc = bc.BloomClassifier(model)
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
@@ -89,7 +89,7 @@ def ca2(data, clf):
     start = time.time()
     model.fit(X_init, Y_init)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
@@ -146,7 +146,7 @@ def ia(data, clf):
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
     model.fit(X_init, Y_init)
     print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
+    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
     my_dc.initialize(X_init, Y_init, n=1024, p=1e-4)
@@ -195,7 +195,7 @@ def base(data, clf):
         model = clf(warm_start=False)
 
     model.fit(X_init, Y_init)
-    model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
+    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
