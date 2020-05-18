@@ -24,7 +24,9 @@ def ca1(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
+    model = LogisticRegression(
+        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+    )
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
@@ -69,7 +71,9 @@ def ca2(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
+    model = LogisticRegression(
+        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+    )
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
@@ -115,7 +119,9 @@ def ia(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
+    model = LogisticRegression(
+        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+    )
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
@@ -161,7 +167,9 @@ def base(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
+    model = LogisticRegression(
+        warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+    )
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
