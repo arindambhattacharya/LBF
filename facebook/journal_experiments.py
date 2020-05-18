@@ -287,6 +287,12 @@ if __name__ == "__main__":
         id_vars=["Method", "Batch", "Run"], value_vars=["FPS", "Time", "Memory"]
     )
     g = sns.relplot(
-        "Batch", "value", col="variable", hue="Method", kind="line", data=melted_df
+        "Batch",
+        "value",
+        col="variable",
+        hue="Method",
+        kind="line",
+        data=melted_df,
+        sharey=False,
     )
     g.savefig("plots/fb_metrics.png")
