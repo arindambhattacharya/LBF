@@ -222,7 +222,7 @@ if __name__ == "__main__":
         print("Running CA1")
         fps, times, mems = ca1(data)
         if i:
-            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+            for j, (fp, time, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
                         "Method": "CA-LBF I",
@@ -238,7 +238,7 @@ if __name__ == "__main__":
         print("Running CA2")
         fps, times, mems = ca2(data)
         if i:
-            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+            for j, (fp, time, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
                         "Method": "CA-LBF I",
@@ -254,7 +254,7 @@ if __name__ == "__main__":
         print("Running IA")
         fps, times, mems = ia(data)
         if i:
-            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+            for j, (fp, time, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
                         "Method": "CA-LBF I",
@@ -270,7 +270,7 @@ if __name__ == "__main__":
         print("Running Base")
         fps, times, mems = base(data)
         if i:
-            for j, fp, time, mem in enumerate(zip(fps, times, mems)):
+            for j, (fp, time, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
                         "Method": "CA-LBF I",
