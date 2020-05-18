@@ -28,7 +28,7 @@ def ca1(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
 
     my_bc = bc.BloomClassifier(model)
     start = time.time()
@@ -75,7 +75,7 @@ def ca2(data):
         warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -125,7 +125,7 @@ def ia(data):
         warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
@@ -173,7 +173,7 @@ def base(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
