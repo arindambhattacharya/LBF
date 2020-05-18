@@ -1,6 +1,5 @@
 import copy
 import os
-import pickle
 import sys
 import time
 import warnings
@@ -9,9 +8,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
-from sklearn.neural_network import MLPClassifier
-from sklearn.linear_model import SGDClassifier
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
@@ -26,7 +24,7 @@ def ca1(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = SGDClassifier(loss="log")
+    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
@@ -54,7 +52,7 @@ def ca1(data):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model.partial_fit(X_insert, Y_insert)
+        model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -71,7 +69,7 @@ def ca2(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = SGDClassifier(loss="log")
+    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
@@ -99,7 +97,7 @@ def ca2(data):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model = SGDClassifier(loss="log")
+        model = LogisticRegression(warm_start=False)
         model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
@@ -117,7 +115,7 @@ def ia(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = SGDClassifier(loss="log")
+    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
@@ -163,7 +161,7 @@ def base(data):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = SGDClassifier(loss="log")
+    model = LogisticRegression(warm_start=True, penalty=None, class_weight={0: 9, 1: 1})
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
