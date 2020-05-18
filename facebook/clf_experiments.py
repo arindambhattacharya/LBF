@@ -26,7 +26,7 @@ def ca1(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = clf(warm_start=True, class_weight={0: 9, 1: 1})
+    model = clf(warm_start=True)
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
@@ -71,7 +71,7 @@ def ca2(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = clf(warm_start=False, class_weight={0: 9, 1: 1})
+    model = clf(warm_start=False)
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
@@ -99,7 +99,7 @@ def ca2(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model = clf(warm_start=False, class_weight={0: 9, 1: 1})
+        model = clf(warm_start=False)
         model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
@@ -117,7 +117,7 @@ def ia(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = clf(warm_start=False, class_weight={0: 9, 1: 1})
+    model = clf(warm_start=False)
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
@@ -163,7 +163,7 @@ def base(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    model = clf(warm_start=False, class_weight={0: 9, 1: 1})
+    model = clf(warm_start=False)
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
