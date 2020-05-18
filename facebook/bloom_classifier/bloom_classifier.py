@@ -25,7 +25,7 @@ class BloomClassifier(object):
         self.models = [model]
         self.count = 0
 
-    def initialize(self, x, y, n=0, m=1000, k=3, p=0.01):
+    def initialize(self, x, y, n=None, m=None, k=3, p=None):
         self.overflow_filter = bf.BloomFilter(m, n, k, p)
         for i in range(len(x)):
             if y[i]:
