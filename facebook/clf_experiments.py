@@ -30,7 +30,7 @@ def ca1(data, clf):
     try:
         model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=True, n_jobs=-1)
+        model = clf(warm_start=True)
 
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
@@ -79,7 +79,7 @@ def ca2(data, clf):
     try:
         model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False, n_jobs=-1)
+        model = clf(warm_start=False)
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
@@ -110,7 +110,7 @@ def ca2(data, clf):
         try:
             model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
         except Exception:
-            model = clf(warm_start=False, n_jobs=-1)
+            model = clf(warm_start=False)
         model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
@@ -131,7 +131,7 @@ def ia(data, clf):
     try:
         model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False, n_jobs=-1)
+        model = clf(warm_start=False)
 
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
@@ -181,7 +181,7 @@ def base(data, clf):
     try:
         model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
-        model = clf(warm_start=False, n_jobs=-1)
+        model = clf(warm_start=False)
 
     model.fit(X_init, Y_init)
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
