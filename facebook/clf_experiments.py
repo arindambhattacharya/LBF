@@ -54,7 +54,7 @@ def ca1(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        model.partial_fit(X_insert, Y_insert)
+        model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -307,6 +307,6 @@ if __name__ == "__main__":
         data=melted_df,
         markers=True,
         facet_kws={"sharey": False},
-        ci=0.95,
+        ci=95,
     )
     g.savefig("plots/fb_clfs.png")
