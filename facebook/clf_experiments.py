@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.linear_model import SGDClassifier
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
@@ -28,7 +28,7 @@ def ca1(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
+        model = clf(loss="hinge", warm_start=True)
     except Exception:
         model = clf(warm_start=True)
 
@@ -83,7 +83,7 @@ def ca2(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
+        model = clf(loss="hinge", warm_start=False)
     except Exception:
         model = clf(warm_start=False)
 
@@ -117,7 +117,7 @@ def ca2(data, clf):
 
         start = time.time()
         try:
-            model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
+            model = model = clf(loss="hinge", warm_start=False)
         except Exception:
             model = clf(warm_start=False)
         print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Insert traing")
@@ -140,7 +140,7 @@ def ia(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
+        model = clf(loss="hinge", warm_start=False)
     except Exception:
         model = clf(warm_start=False)
 
@@ -192,7 +192,7 @@ def base(data, clf):
     X_init, Y_init, X_inserts, Y_inserts = data
 
     try:
-        model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
+        model = clf(loss="hinge", warm_start=False)
     except Exception:
         model = clf(warm_start=False)
 
@@ -252,8 +252,7 @@ if __name__ == "__main__":
         data = (X_init, Y_init, X_inserts, Y_inserts)
         clfs = dict(
             zip(
-                ["RF", "NN", "LR"],
-                [RandomForestClassifier, MLPClassifier, LogisticRegression],
+                ["SVM", "NN", "LR"], [SGDClassifier, MLPClassifier, LogisticRegression],
             )
         )
         for name, clf in clfs.items():
