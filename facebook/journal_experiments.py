@@ -241,7 +241,7 @@ if __name__ == "__main__":
             for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
-                        "Method": "CA-LBF I",
+                        "Method": "CA-LBF II",
                         "Run": i,
                         "Batch": j,
                         "FPS": fp,
@@ -257,7 +257,7 @@ if __name__ == "__main__":
             for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
-                        "Method": "CA-LBF I",
+                        "Method": "IA-LBF",
                         "Run": i,
                         "Batch": j,
                         "FPS": fp,
@@ -273,7 +273,7 @@ if __name__ == "__main__":
             for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
-                        "Method": "CA-LBF I",
+                        "Method": "LBF",
                         "Run": i,
                         "Batch": j,
                         "FPS": fp,
