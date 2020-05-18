@@ -32,11 +32,13 @@ def ca1(data, clf):
     except Exception:
         model = clf(warm_start=True)
 
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
+    start = time.time()
     model.fit(X_init, Y_init)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
 
     my_bc = bc.BloomClassifier(model)
-    start = time.time()
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
@@ -59,7 +61,9 @@ def ca1(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Insert training")
         model.fit(X_insert, Y_insert)
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -80,11 +84,14 @@ def ca2(data, clf):
         model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
     except Exception:
         model = clf(warm_start=False)
+
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
+    start = time.time()
     model.fit(X_init, Y_init)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])]) + 1
     my_bc = bc.BloomClassifier(model)
 
-    start = time.time()
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
@@ -111,7 +118,9 @@ def ca2(data, clf):
             model = clf(n_estimators=10, max_depth=2, warm_start=True, n_jobs=-1)
         except Exception:
             model = clf(warm_start=False)
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Insert traing")
         model.fit(X_insert, Y_insert)
+        print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
@@ -133,11 +142,13 @@ def ia(data, clf):
     except Exception:
         model = clf(warm_start=False)
 
+    start = time.time()
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Init training")
     model.fit(X_init, Y_init)
+    print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Done")
     model_fp = len([1 for x in X_init[Y_init == 0] if model.predict([x])])
     my_dc = dc.dpbf_logistic(model)
 
-    start = time.time()
     my_dc.initialize(X_init, Y_init, n=1024, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
