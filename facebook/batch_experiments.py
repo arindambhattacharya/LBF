@@ -301,6 +301,6 @@ if __name__ == "__main__":
         data=melted_df,
         markers=True,
         facet_kws={"sharey": False},
-        ci=0.95,
+        ci=80,
     )
     g.savefig("plots/fb_metrics.png")
