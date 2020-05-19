@@ -260,7 +260,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(20):
+    for i in range(4):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]

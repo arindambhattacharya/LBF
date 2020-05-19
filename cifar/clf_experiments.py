@@ -43,7 +43,7 @@ def ca1(data, clf):
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
 
     my_bc = bc.BloomClassifier(model)
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -98,7 +98,7 @@ def ca2(data, clf):
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -166,7 +166,7 @@ def ia(data, clf):
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
-    my_dc.initialize(X_init, Y_init, n=1024, p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -222,7 +222,7 @@ def base(data, clf):
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -260,7 +260,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(20):
+    for i in range(4):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
