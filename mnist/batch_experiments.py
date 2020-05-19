@@ -209,7 +209,7 @@ def base(data):
 
 if __name__ == "__main__":
     X, Y = skds.fetch_openml("mnist_784", return_X_y=True)
-    Y = [int(y) for y in Y]
+    Y = np.array([int(y) for y in Y])
     Y[Y <= 4] = 0
     Y[Y >= 5] = 1
     N = len(X) // 2

@@ -253,7 +253,7 @@ def base(data, clf):
 
 if __name__ == "__main__":
     X, Y = skds.fetch_openml("cifar_10", return_X_y=True)
-    Y = [int(y) for y in Y]
+    Y = np.array([int(y) for y in Y])
     X = X[Y < 2]
     Y = Y[Y < 2]
     N = len(X) // 2
