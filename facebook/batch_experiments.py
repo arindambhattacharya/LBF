@@ -28,7 +28,7 @@ def ca1(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
 
     my_bc = bc.BloomClassifier(model)
     start = time.time()
@@ -75,7 +75,7 @@ def ca2(data):
         warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -173,7 +173,7 @@ def base(data):
         warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
     )
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -215,7 +215,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(10):
+    for i in range(20):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
@@ -291,6 +291,8 @@ if __name__ == "__main__":
                     ignore_index=True,
                 )
 
+    df.to_csv("./outputs/fb_batch_output.csv")
+
     melted_df = df.melt(
         id_vars=["Method", "Batch", "Run"], value_vars=["FPS", "Time", "Memory"]
     )
@@ -303,6 +305,6 @@ if __name__ == "__main__":
         data=melted_df,
         markers=True,
         facet_kws={"sharey": False},
-        ci=95,
+        ci=None,
     )
     g.savefig("plots/fb_metrics.png")

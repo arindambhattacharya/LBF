@@ -34,7 +34,7 @@ def ca1(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
 
     my_bc = bc.BloomClassifier(model)
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
@@ -83,7 +83,7 @@ def ca2(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
     my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
@@ -185,7 +185,7 @@ def base(data, clf):
         model = clf(warm_start=False)
 
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
@@ -227,7 +227,7 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(4):
+    for i in range(20):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
@@ -312,7 +312,7 @@ if __name__ == "__main__":
                         },
                         ignore_index=True,
                     )
-    df.to_csv("./outputs/fb_output.csv")
+    df.to_csv("./outputs/fb_clf_output.csv")
 
     print("Plotting")
     melted_df = df.melt(
@@ -329,6 +329,6 @@ if __name__ == "__main__":
         data=melted_df,
         markers=True,
         facet_kws={"sharey": False},
-        ci=95,
+        ci=None,
     )
     g.savefig("plots/fb_clfs.png")
