@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
-from sklearn.linear_model import SGDClassifier
-from sklearn.linear_model import LogisticRegression
+import sklearn.datasets as skds
+from sklearn.linear_model import LogisticRegression, SGDClassifier
 from sklearn.model_selection import train_test_split
 from sklearn.neural_network import MLPClassifier
 
