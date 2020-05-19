@@ -27,10 +27,16 @@ def ca1(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    try:
-        model = clf(loss="hinge", warm_start=True)
-    except Exception:
-        model = clf(warm_start=True)
+    if clf == "SVM":
+        model = SGDClassifier(
+            loss="hinge", warm_start=True, class_weight={0: 9, 1: 1}, penalty="none"
+        )
+    elif clf == "NN":
+        model = MLPClassifier((10, 10), warm_start=True)
+    elif clf == "LR":
+        model = LogisticRegression(
+            warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
+        )
 
     start = time.time()
     model.fit(X_init, Y_init)
@@ -76,10 +82,16 @@ def ca2(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    try:
-        model = clf(loss="hinge", warm_start=False)
-    except Exception:
-        model = clf(warm_start=False)
+    if clf == "SVM":
+        model = SGDClassifier(
+            loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
+        )
+    elif clf == "NN":
+        model = MLPClassifier((10, 10), warm_start=False)
+    elif clf == "LR":
+        model = LogisticRegression(
+            warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
+        )
 
     start = time.time()
     model.fit(X_init, Y_init)
@@ -108,10 +120,19 @@ def ca2(data, clf):
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
         start = time.time()
-        try:
-            model = model = clf(loss="hinge", warm_start=False)
-        except Exception:
-            model = clf(warm_start=False)
+        if clf == "SVM":
+            model = SGDClassifier(
+                loss="hinge",
+                warm_start=False,
+                class_weight={0: 9, 1: 1},
+                penalty="none",
+            )
+        elif clf == "NN":
+            model = MLPClassifier((10, 10), warm_start=False)
+        elif clf == "LR":
+            model = LogisticRegression(
+                warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
+            )
         model.fit(X_insert, Y_insert)
         my_bc.add_data(X_insert, Y_insert, model)
         insert_times.append((time.time() - start) / len(X_insert))
@@ -129,10 +150,16 @@ def ia(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    try:
-        model = clf(loss="hinge", warm_start=False)
-    except Exception:
-        model = clf(warm_start=False)
+    if clf == "SVM":
+        model = SGDClassifier(
+            loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
+        )
+    elif clf == "NN":
+        model = MLPClassifier((10, 10), warm_start=False)
+    elif clf == "LR":
+        model = LogisticRegression(
+            warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
+        )
 
     start = time.time()
     model.fit(X_init, Y_init)
@@ -179,10 +206,16 @@ def base(data, clf):
 
     X_init, Y_init, X_inserts, Y_inserts = data
 
-    try:
-        model = clf(loss="hinge", warm_start=False)
-    except Exception:
-        model = clf(warm_start=False)
+    if clf == "SVM":
+        model = SGDClassifier(
+            loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
+        )
+    elif clf == "NN":
+        model = MLPClassifier((10, 10), warm_start=False)
+    elif clf == "LR":
+        model = LogisticRegression(
+            warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
+        )
 
     model.fit(X_init, Y_init)
     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
@@ -238,13 +271,10 @@ if __name__ == "__main__":
         Y_inserts = np.array_split(Y[N:], 10)
 
         data = (X_init, Y_init, X_inserts, Y_inserts)
-        clfs = dict(
-            zip(
-                ["SVM", "NN", "LR"], [SGDClassifier, MLPClassifier, LogisticRegression],
-            )
-        )
-        for name, clf in clfs.items():
-            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {name}")
+        clfs = ["SVM", "NN", "LR"]
+
+        for clf in clfs:
+            print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {clf}")
             print("Running CA1")
             fps, times, mems = ca1(data, clf)
             if i:
@@ -257,7 +287,7 @@ if __name__ == "__main__":
                             "FPS": fp,
                             "Time": t,
                             "Memory": mem,
-                            "Classifier": name,
+                            "Classifier": clf,
                         },
                         ignore_index=True,
                     )
@@ -274,7 +304,7 @@ if __name__ == "__main__":
                             "FPS": fp,
                             "Time": t,
                             "Memory": mem,
-                            "Classifier": name,
+                            "Classifier": clf,
                         },
                         ignore_index=True,
                     )
@@ -291,7 +321,7 @@ if __name__ == "__main__":
                             "FPS": fp,
                             "Time": t,
                             "Memory": mem,
-                            "Classifier": name,
+                            "Classifier": clf,
                         },
                         ignore_index=True,
                     )
@@ -308,7 +338,7 @@ if __name__ == "__main__":
                             "FPS": fp,
                             "Time": t,
                             "Memory": mem,
-                            "Classifier": name,
+                            "Classifier": clf,
                         },
                         ignore_index=True,
                     )
