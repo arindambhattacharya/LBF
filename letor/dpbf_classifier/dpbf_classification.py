@@ -1,10 +1,13 @@
+import sys
+from random import shuffle
+
 import numpy as np
-from sklearn.datasets.samples_generator import make_blobs
 from matplotlib import pyplot
 from pandas import DataFrame
-from random import shuffle
+from sklearn.datasets.samples_generator import make_blobs
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+
 import dpbf
 
 
@@ -43,7 +46,7 @@ class dpbf_logistic:
         return fp / n
 
     def get_size(self):
-        return dpbf.getMemory()
+        return dpbf.getMemory() + sys.getsizeof(self.model)
 
 
 # x_train = []

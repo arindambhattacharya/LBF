@@ -1,10 +1,13 @@
+import sys
+from random import shuffle
+
 import numpy as np
-from sklearn.datasets.samples_generator import make_blobs
 from matplotlib import pyplot
 from pandas import DataFrame
-from random import shuffle
+from sklearn.datasets.samples_generator import make_blobs
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import confusion_matrix
+
 import dpbf
 
 
@@ -25,25 +28,25 @@ class dpbf_logistic:
         num_partition = 30
         dpbf.init_bloom_filter(n, k, counter_chunk, num_partition, fprob)
         for i in range(len(x)):
-            if np.allclose(y[i], np.array([1, 0])): #y = [p_true, p_false]
+            if y[i] == 1:
                 self.insert(x[i])
         dpbf.update()
 
     def insert(self, idx):
-        y = self.model.predict([idx]) #predict returns [p_true, p_false]
-        if np.argmax(y) == 1:
+        y = self.model.predict([idx])
+        if y == 0:  # classifier false negative
             dpbf.insert(mhash(idx))
 
     def check(self, idx):
-        return np.argmax(self.model.predict([idx])) == '0' or dpbf.check(mhash(idx))
+        return self.model.predict([idx]) == 1 or dpbf.check(mhash(idx))
 
     def get_fpr(self, X, Y):
-        fp = len([x for x, y in zip(X, Y) if self.check(x) and np.allclose(y, np.array([0, 1]))])
-        n = len([y for y in Y if np.allclose(y, np.array([0, 1]))])
+        fp = len([x for x, y in zip(X, Y) if self.check(x) and y == 0])
+        n = len([y for y in Y if y == 0])
         return fp / n
 
     def get_size(self):
-        return dpbf.getMemory()
+        return dpbf.getMemory() + sys.getsizeof(self.model)
 
 
 # x_train = []
