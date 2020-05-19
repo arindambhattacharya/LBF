@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import sklearn.datasets as skds
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 
@@ -207,10 +208,9 @@ def base(data):
 
 
 if __name__ == "__main__":
-    ds = pd.read_pickle("facebook_checkin.pkl")
-    X = ds.drop(["place_id"], axis=1)
-    X = X.to_numpy()
-    Y = ds["place_id"].to_numpy()
+    X, Y = skds.fetch_openml("cifar_10", return_X_y=True)
+    X = X[Y < 2]
+    Y = Y[Y < 2]
     N = len(X) // 2
 
     df = pd.DataFrame()

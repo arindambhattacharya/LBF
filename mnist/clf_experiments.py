@@ -252,10 +252,9 @@ def base(data, clf):
 
 
 if __name__ == "__main__":
-    ds = pd.read_pickle("facebook_checkin.pkl")
-    X = ds.drop(["place_id"], axis=1)
-    X = X.to_numpy()
-    Y = ds["place_id"].to_numpy()
+    X, Y = skds.fetch_openml("mnist_784", return_X_y=True)
+    Y[Y <= 4] = 0
+    Y[Y >= 5] = 1
     N = len(X) // 2
 
     df = pd.DataFrame()

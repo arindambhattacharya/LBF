@@ -208,9 +208,10 @@ def base(data):
 
 
 if __name__ == "__main__":
-    X, Y = skds.fetch_openml("mnist_784", return_X_y=True)
-    Y[Y <= 4] = 0
-    Y[Y >= 5] = 1
+    ds = pd.read_pickle("letor.pkl")
+    X = ds.drop(["label"], axis=1)
+    X = X.to_numpy()
+    Y = ds["label"].to_numpy()
     N = len(X) // 2
 
     df = pd.DataFrame()
