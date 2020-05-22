@@ -343,7 +343,7 @@ if __name__ == "__main__":
                         ignore_index=True,
                     )
     df.to_csv("./outputs/letor_clf_output.csv")
-
+    df = pd.read_csv("./outputs/letor_clf_output.csv")
     print("Plotting")
     melted_df = df.melt(
         id_vars=["Method", "Batch", "Run", "Classifier"],

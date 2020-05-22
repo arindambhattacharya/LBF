@@ -32,7 +32,7 @@ def ca1(data, clf):
             loss="hinge", warm_start=True, class_weight={0: 9, 1: 1}, penalty="none"
         )
     elif clf == "NN":
-        model = MLPClassifier((1024, 512, 256, 32), warm_start=True)
+        model = MLPClassifier((1024, 512, 256, 32), warm_start=True, alpha=0)
     elif clf == "LR":
         model = LogisticRegression(
             warm_start=True, penalty="none", class_weight={0: 9, 1: 1}
@@ -40,10 +40,10 @@ def ca1(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
-
     my_bc = bc.BloomClassifier(model)
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -87,7 +87,7 @@ def ca2(data, clf):
             loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
         )
     elif clf == "NN":
-        model = MLPClassifier((64, 128, 128, 64), warm_start=False)
+        model = MLPClassifier((64, 128, 128, 64), warm_start=False, alpha=0)
     elif clf == "LR":
         model = LogisticRegression(
             warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
@@ -95,10 +95,10 @@ def ca2(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
-
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -155,7 +155,7 @@ def ia(data, clf):
             loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
         )
     elif clf == "NN":
-        model = MLPClassifier((64, 128, 128, 64), warm_start=False)
+        model = MLPClassifier((64, 128, 128, 64), warm_start=False, alpha=0)
     elif clf == "LR":
         model = LogisticRegression(
             warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
@@ -163,10 +163,10 @@ def ia(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
-
-    my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    # my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -211,18 +211,18 @@ def base(data, clf):
             loss="hinge", warm_start=False, class_weight={0: 9, 1: 1}, penalty="none"
         )
     elif clf == "NN":
-        model = MLPClassifier((64, 128, 128, 64), warm_start=False)
+        model = MLPClassifier((64, 128, 128, 64), warm_start=False, alpha=0)
     elif clf == "LR":
         model = LogisticRegression(
             warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
         )
 
-    model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
-    my_bc = bc.BloomClassifier(model)
-
     start = time.time()
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    model.fit(X_init, Y_init)
+    my_bc = bc.BloomClassifier(model)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -260,19 +260,19 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(2):
-        shuffle_indices = np.arange(len(X))
-        np.random.shuffle(shuffle_indices)
-        X = X[shuffle_indices]
-        Y = Y[shuffle_indices]
-        X_init = X[:N]
-        Y_init = Y[:N]
-        X_inserts = np.array_split(X[N:], 10)
-        Y_inserts = np.array_split(Y[N:], 10)
+    shuffle_indices = np.arange(len(X))
+    np.random.shuffle(shuffle_indices)
+    X = X[shuffle_indices]
+    Y = Y[shuffle_indices]
+    X_init = X[:N]
+    Y_init = Y[:N]
+    X_inserts = np.array_split(X[N:], 10)
+    Y_inserts = np.array_split(Y[N:], 10)
 
-        data = (X_init, Y_init, X_inserts, Y_inserts)
-        clfs = ["SVM", "NN", "LR"]
+    data = (X_init, Y_init, X_inserts, Y_inserts)
+    clfs = ["SVM", "NN", "LR"]
 
+    for i in range(3):
         for clf in clfs:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {clf}")
             print("Running CA1")
@@ -343,22 +343,3 @@ if __name__ == "__main__":
                         ignore_index=True,
                     )
     df.to_csv("./outputs/mnist_clf_output.csv")
-
-    print("Plotting")
-    melted_df = df.melt(
-        id_vars=["Method", "Batch", "Run", "Classifier"],
-        value_vars=["FPS", "Time", "Memory"],
-    )
-    g = sns.relplot(
-        "Batch",
-        "value",
-        col="variable",
-        row="Method",
-        hue="Classifier",
-        kind="line",
-        data=melted_df,
-        markers=True,
-        facet_kws={"sharey": False},
-        ci=None,
-    )
-    g.savefig("plots/mnist_clfs.png")

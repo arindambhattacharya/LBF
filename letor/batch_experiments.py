@@ -293,7 +293,7 @@ if __name__ == "__main__":
                 )
 
     df.to_csv("./outputs/letor_batch_output.csv")
-
+    df = pd.read_csv("./outputs/letor_batch_output.csv")
     melted_df = df.melt(
         id_vars=["Method", "Batch", "Run"], value_vars=["FPS", "Time", "Memory"]
     )
@@ -308,4 +308,7 @@ if __name__ == "__main__":
         facet_kws={"sharey": False},
         ci=None,
     )
+    g.axes[0][0].set_title("FPS")
+    g.axes[0][1].set_title("Time")
+    g.axes[0][2].set_title("Memory")
     g.savefig("plots/letor_metrics.png")
