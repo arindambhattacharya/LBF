@@ -40,10 +40,11 @@ def ca1(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
 
     my_bc = bc.BloomClassifier(model)
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -95,10 +96,11 @@ def ca2(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -163,10 +165,11 @@ def ia(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
-    my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -218,11 +221,12 @@ def base(data, clf):
         )
 
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+    # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
     start = time.time()
-    my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -260,21 +264,39 @@ if __name__ == "__main__":
 
     df = pd.DataFrame()
 
-    for i in range(2):
-        shuffle_indices = np.arange(len(X))
-        np.random.shuffle(shuffle_indices)
-        X = X[shuffle_indices]
-        Y = Y[shuffle_indices]
-        X_init = X[:N]
-        Y_init = Y[:N]
-        X_inserts = np.array_split(X[N:], 10)
-        Y_inserts = np.array_split(Y[N:], 10)
+    shuffle_indices = np.arange(len(X))
+    np.random.shuffle(shuffle_indices)
+    X = X[shuffle_indices]
+    Y = Y[shuffle_indices]
+    X_init = X[:N]
+    Y_init = Y[:N]
+    X_inserts = np.array_split(X[N:], 10)
+    Y_inserts = np.array_split(Y[N:], 10)
 
+    for i in range(2):
         data = (X_init, Y_init, X_inserts, Y_inserts)
-        clfs = ["SVM", "NN", "LR"]
+        clfs = ["NN", "SVM", "LR"]
 
         for clf in clfs:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {clf}")
+
+            print("Running IA")
+            fps, times, mems = ia(data, clf)
+            if i:
+                for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
+                    df = df.append(
+                        {
+                            "Method": "IA-LBF",
+                            "Run": i,
+                            "Batch": j,
+                            "FPS": fp,
+                            "Time": t,
+                            "Memory": mem,
+                            "Classifier": clf,
+                        },
+                        ignore_index=True,
+                    )
+
             print("Running CA1")
             fps, times, mems = ca1(data, clf)
             if i:
@@ -299,23 +321,6 @@ if __name__ == "__main__":
                     df = df.append(
                         {
                             "Method": "CA-LBF II",
-                            "Run": i,
-                            "Batch": j,
-                            "FPS": fp,
-                            "Time": t,
-                            "Memory": mem,
-                            "Classifier": clf,
-                        },
-                        ignore_index=True,
-                    )
-
-            print("Running IA")
-            fps, times, mems = ia(data, clf)
-            if i:
-                for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
-                    df = df.append(
-                        {
-                            "Method": "IA-LBF",
                             "Run": i,
                             "Batch": j,
                             "FPS": fp,
