@@ -130,7 +130,7 @@ def ia(data):
     my_dc = dc.dpbf_logistic(model)
 
     start = time.time()
-    my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=1000, p=1e-4)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -228,6 +228,23 @@ if __name__ == "__main__":
 
         data = (X_init, Y_init, X_inserts, Y_inserts)
 
+        print("Running IA")
+        fps, times, mems = ia(data)
+        if i:
+            for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "IA-LBF",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": t,
+                        "Memory": mem,
+                    },
+                    ignore_index=True,
+                )
+
+ 
         print("Running CA1")
         fps, times, mems = ca1(data)
         if i:
@@ -251,22 +268,6 @@ if __name__ == "__main__":
                 df = df.append(
                     {
                         "Method": "CA-LBF II",
-                        "Run": i,
-                        "Batch": j,
-                        "FPS": fp,
-                        "Time": t,
-                        "Memory": mem,
-                    },
-                    ignore_index=True,
-                )
-
-        print("Running IA")
-        fps, times, mems = ia(data)
-        if i:
-            for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
-                df = df.append(
-                    {
-                        "Method": "IA-LBF",
                         "Run": i,
                         "Batch": j,
                         "FPS": fp,

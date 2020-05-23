@@ -169,7 +169,7 @@ def ia(data, clf):
     my_dc = dc.dpbf_logistic(model)
 
     # my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
-    my_dc.initialize(X_init, Y_init, n=1000, p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=100, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -187,6 +187,7 @@ def ia(data, clf):
     entire_Y = Y_init
 
     for X_insert, Y_insert in zip(X_inserts, Y_inserts):
+        print('Inserting new batch...')
         entire_X = np.concatenate((entire_X, X_insert))
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
@@ -275,7 +276,7 @@ if __name__ == "__main__":
 
     for i in range(2):
         data = (X_init, Y_init, X_inserts, Y_inserts)
-        clfs = ["NN", "SVM", "LR"]
+        clfs = ["LR", "SVM", "NN"]
 
         for clf in clfs:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {clf}")

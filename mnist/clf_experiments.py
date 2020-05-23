@@ -43,7 +43,7 @@ def ca1(data, clf):
     my_bc = bc.BloomClassifier(model)
     # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
-    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -98,7 +98,7 @@ def ca2(data, clf):
     my_bc = bc.BloomClassifier(model)
     # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
-    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -166,7 +166,7 @@ def ia(data, clf):
     my_dc = dc.dpbf_logistic(model)
     # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     # my_dc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
-    my_dc.initialize(X_init, Y_init, n=1000, p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=100, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -184,6 +184,7 @@ def ia(data, clf):
     entire_Y = Y_init
 
     for X_insert, Y_insert in zip(X_inserts, Y_inserts):
+        print('Inserting batch...')
         entire_X = np.concatenate((entire_X, X_insert))
         entire_Y = np.concatenate((entire_Y, Y_insert))
 
@@ -222,7 +223,7 @@ def base(data, clf):
     my_bc = bc.BloomClassifier(model)
     # model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     # my_bc.initialize(X_init, Y_init, n=int(model_fp), p=1e-4)
-    my_bc.initialize(X_init, Y_init, m=1000, p=1e-4)
+    my_bc.initialize(X_init, Y_init, m=1000, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -270,7 +271,7 @@ if __name__ == "__main__":
     Y_inserts = np.array_split(Y[N:], 10)
 
     data = (X_init, Y_init, X_inserts, Y_inserts)
-    clfs = ["NN", "LR", "SVM"]
+    clfs = ["LR", "SVM", "NN"]
 
     for i in range(3):
         for clf in clfs:
