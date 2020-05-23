@@ -270,11 +270,28 @@ if __name__ == "__main__":
     Y_inserts = np.array_split(Y[N:], 10)
 
     data = (X_init, Y_init, X_inserts, Y_inserts)
-    clfs = ["SVM", "NN", "LR"]
+    clfs = ["NN", "LR", "SVM"]
 
     for i in range(3):
         for clf in clfs:
             print(f"{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}: Running {clf}")
+            print("Running IA")
+            fps, times, mems = ia(data, clf)
+            if i:
+                for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
+                    df = df.append(
+                        {
+                            "Method": "IA-LBF",
+                            "Run": i,
+                            "Batch": j,
+                            "FPS": fp,
+                            "Time": t,
+                            "Memory": mem,
+                            "Classifier": clf,
+                        },
+                        ignore_index=True,
+                    )
+
             print("Running CA1")
             fps, times, mems = ca1(data, clf)
             if i:
@@ -309,24 +326,7 @@ if __name__ == "__main__":
                         ignore_index=True,
                     )
 
-            print("Running IA")
-            fps, times, mems = ia(data, clf)
-            if i:
-                for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
-                    df = df.append(
-                        {
-                            "Method": "IA-LBF",
-                            "Run": i,
-                            "Batch": j,
-                            "FPS": fp,
-                            "Time": t,
-                            "Memory": mem,
-                            "Classifier": clf,
-                        },
-                        ignore_index=True,
-                    )
-
-            print("Running Base")
+                print("Running Base")
             fps, times, mems = base(data, clf)
             if i:
                 for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
