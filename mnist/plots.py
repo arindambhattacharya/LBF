@@ -1,5 +1,6 @@
 import pandas as pd
 import seaborn as sns
+import matplotlib.pyplot as plt
 
 if __name__ == "__main__":
     df = pd.read_csv("./outputs/mnist_clf_output.csv")
@@ -8,16 +9,32 @@ if __name__ == "__main__":
         id_vars=["Method", "Batch", "Run", "Classifier"],
         value_vars=["FPS", "Time", "Memory"],
     )
-    g = sns.relplot(
+    
+    nn_df = df[df["Classifier"] == "NN"]
+    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    sns.lineplot(
         "Batch",
-        "value",
-        col="variable",
-        row="Method",
-        hue="Classifier",
-        kind="line",
-        data=melted_df,
-        markers=True,
-        facet_kws={"sharey": False},
+        "FPS",
+        hue="Method",
+        data=nn_df,
+        estimator=min,
         ci=None,
+        ax=axs[0],
+        markers=True,
+        hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF"],
     )
-    g.savefig("plots/mnist_clfs.pdf")
+    sns.lineplot(
+        "Batch",
+        "Memory",
+        hue="Method",
+        data=nn_df,
+        estimator=min,
+        ci=None,
+        ax=axs[1],
+        markers=True,
+        hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF"],
+    )
+    plt.tight_layout()
+    plt.savefig("plots/mnist_fp_mem.pdf")
+
+
