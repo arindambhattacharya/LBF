@@ -166,7 +166,7 @@ def ia(data, clf):
 #     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
-    my_dc.initialize(X_init, Y_init, n=500, p=1e-2)
+    my_dc.initialize(X_init, Y_init, n=64, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -298,16 +298,19 @@ if __name__ == "__main__":
     N = len(X) // 2
 
     df = pd.DataFrame()
-
-    for i in range(20):
+    
+    batches = 5
+    reps = 5
+    
+    for i in range(reps):
         shuffle_indices = np.arange(len(X))
         np.random.shuffle(shuffle_indices)
         X = X[shuffle_indices]
         Y = Y[shuffle_indices]
         X_init = X[:N]
         Y_init = Y[:N]
-        X_inserts = np.array_split(X[N:], 10)
-        Y_inserts = np.array_split(Y[N:], 10)
+        X_inserts = np.array_split(X[N:], batches)
+        Y_inserts = np.array_split(Y[N:], batches)
 
         data = (X_init, Y_init, X_inserts, Y_inserts)
         clfs = ["SVM", "NN", "LR"]
