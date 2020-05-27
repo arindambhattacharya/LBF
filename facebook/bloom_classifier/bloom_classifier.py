@@ -59,6 +59,12 @@ class BloomClassifier(object):
         n = len([y for y in Y if y == 0])
         return fp / n
 
+    def get_clf_size(self):
+        return sys.getsizeof(self.models)
+    
+    def get_bf_size(self):
+        return sys.getsizeof(self.overflow_filter)
+    
     def get_size(self):
         return sys.getsizeof(self.models) + sys.getsizeof(self.overflow_filter)
         # return sys.getsizeof(self.overflow_filter)

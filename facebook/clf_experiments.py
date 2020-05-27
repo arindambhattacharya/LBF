@@ -40,10 +40,10 @@ def ca1(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+#     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
 
     my_bc = bc.BloomClassifier(model)
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=2500, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -95,10 +95,10 @@ def ca2(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+#     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=2500, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -163,10 +163,10 @@ def ia(data, clf):
 
     start = time.time()
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
+#     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 100)
     my_dc = dc.dpbf_logistic(model)
 
-    my_dc.initialize(X_init, Y_init, n=1024, p=1e-4)
+    my_dc.initialize(X_init, Y_init, n=500, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_dc.get_fpr(X_init, Y_init)
@@ -217,12 +217,13 @@ def base(data, clf):
             warm_start=False, penalty="none", class_weight={0: 9, 1: 1}
         )
 
+    start = time.time()
+    
     model.fit(X_init, Y_init)
-    model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
+#     model_fp = max(np.sum([model.predict(X_init[Y_init == 0])]), 1000)
     my_bc = bc.BloomClassifier(model)
 
-    start = time.time()
-    my_bc.initialize(X_init, Y_init, n=model_fp, p=1e-4)
+    my_bc.initialize(X_init, Y_init, n=2500, p=1e-2)
 
     init_time = (time.time() - start) / len(X_init)
     init_fp = my_bc.get_fpr(X_init, Y_init)
@@ -247,6 +248,44 @@ def base(data, clf):
         insert_times.append((time.time() - start) / len(X_insert))
         insert_fps.append(my_bc.get_fpr(entire_X, entire_Y))
         insert_mems.append(my_bc.get_size())
+
+    return (insert_fps, insert_times, insert_mems)
+
+
+def bf(data,):
+    sys.path.append("bloom_classifier")
+
+    import bloom_filter as bf
+
+    X_init, Y_init, X_inserts, Y_inserts = data
+
+    my_bf = bf.BloomFilter(n=250000, p=1e-2)
+
+    start = time.time()
+    my_bf.add_data(X_init, Y_init)
+    init_time = (time.time() - start) / len(X_init)
+    init_fp = my_bf.real_fpr(X_init, Y_init)
+    init_mem = my_bf.real_size()
+
+    insert_fps = []
+    insert_mems = []
+    insert_times = []
+
+    insert_fps.append(init_fp)
+    insert_mems.append(init_mem)
+    insert_times.append(init_time)
+
+    entire_X = X_init
+    entire_Y = Y_init
+
+    for X_insert, Y_insert in zip(X_inserts, Y_inserts):
+        entire_X = np.concatenate((entire_X, X_insert))
+        entire_Y = np.concatenate((entire_Y, Y_insert))
+        start = time.time()
+        my_bf.add_data(X_insert, Y_insert)
+        insert_times.append((time.time() - start) / len(X_insert))
+        insert_fps.append(my_bf.real_fpr(entire_X, entire_Y))
+        insert_mems.append(my_bf.real_size())
 
     return (insert_fps, insert_times, insert_mems)
 
@@ -342,6 +381,22 @@ if __name__ == "__main__":
                         },
                         ignore_index=True,
                     )
+        print("Running BF")
+        fps, times, mems = bf(data)
+        if i:
+            for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
+                df = df.append(
+                    {
+                        "Method": "LBF",
+                        "Run": i,
+                        "Batch": j,
+                        "FPS": fp,
+                        "Time": t,
+                        "Memory": mem,
+                        "Classifier": clf,
+                    },
+                    ignore_index=True,
+                )
     df.to_csv("./outputs/fb_clf_output.csv")
 
     print("Plotting")

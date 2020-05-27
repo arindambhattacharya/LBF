@@ -1,6 +1,7 @@
 from bitarray import bitarray
 import mmh3
 import math
+import sys
 
 
 class BloomFilter():
@@ -90,6 +91,11 @@ class BloomFilter():
             bits.append(self.get_clf_hash(item))
         for b in bits:
             self.bloom_filter[b] = True
+            
+    def add_data(self, X, Y):
+        for x, y in zip(X, Y):
+            if y:
+                self.insert(x)
 
     def check(self, item):
         '''
@@ -100,3 +106,11 @@ class BloomFilter():
             if not self.bloom_filter[digest]:
                 return False
         return True
+
+    def real_size(self):
+        return sys.getsizeof(self.bloom_filter)
+    
+    def real_fpr(self, X, Y):
+        neg = [x for x, y in zip(X, Y) if not y]
+        fps = [x for x in neg if self.check(x)]
+        return len(fps) / len(neg)
