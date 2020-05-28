@@ -37,7 +37,7 @@ if __name__ == "__main__":
     nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(200, 1500, 24)
     nn_df.loc[nn_df["Method"] == "LBF", "Memory"] = 200
     nn_df.loc[nn_df["Method"] == "BF", "Memory"] = 800
-    nn_df.loc[nn_df["Method"] == "IA-LBF", "Memory"] /= 500
+    nn_df.loc[nn_df["Method"] == "IA-LBF", "Memory"] /= 50
     sns.barplot(
         "Batch",
         "Memory",

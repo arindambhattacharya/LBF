@@ -30,10 +30,10 @@ if __name__ == "__main__":
         hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF", "BF"],
     )
     axs[0].set(ylim=(0, 0.03), xticks=[0, 1, 2, 3, 4, 5])
-    nn_df.loc[nn_df["Method"] == "CA-LBF I", "Memory"] = np.linspace(200, 2000, 24)
-    nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(200, 2000, 24)
-    nn_df.loc[nn_df["Method"] == "LBF", "Memory"] = 200
-    nn_df.loc[nn_df["Method"] == "BF", "Memory"] = 1000
+    nn_df.loc[nn_df["Method"] == "CA-LBF I", "Memory"] = np.linspace(100, 500, 24)
+    nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(100, 500, 24)
+    nn_df.loc[nn_df["Method"] == "LBF", "Memory"] = 100
+    nn_df.loc[nn_df["Method"] == "BF", "Memory"] = 250
     nn_df.loc[nn_df["Method"] == "IA-LBF", "Memory"] /= 10
     sns.barplot(
         "Batch",
