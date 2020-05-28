@@ -390,7 +390,7 @@ if __name__ == "__main__":
             for j, (fp, t, mem) in enumerate(zip(fps, times, mems)):
                 df = df.append(
                     {
-                        "Method": "LBF",
+                        "Method": "BF",
                         "Run": i,
                         "Batch": j,
                         "FPS": fp,
