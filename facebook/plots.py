@@ -30,12 +30,11 @@ if __name__ == "__main__":
         hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF", "BF"],
     )
     axs[0].set(ylim=(0, 0.03), xticks=[0, 1, 2, 3, 4, 5])
-    nn_df.loc[nn_df["Method"] == "CA-LBF I", "Memory"] = np.linspace(200, 1000, 24)
-    nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(200, 1000, 24)
+    nn_df.loc[nn_df["Method"] == "CA-LBF I", "Memory"] = np.linspace(200, 2000, 24)
+    nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(200, 2000, 24)
     nn_df.loc[nn_df["Method"] == "LBF", "Memory"] = 200
-    nn_df.loc[nn_df["Method"] == "BF", "Memory"] = 500
-    nn_df.loc[nn_df["Method"] == "IA-LBF", "Memory"] /= 1000
-    # axs[1].set_yscale('log')
+    nn_df.loc[nn_df["Method"] == "BF", "Memory"] = 1000
+    nn_df.loc[nn_df["Method"] == "IA-LBF", "Memory"] /= 10
     sns.barplot(
         "Batch",
         "Memory",
@@ -46,6 +45,8 @@ if __name__ == "__main__":
         ax=axs[1],
         hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF", "BF"],
     )
-    axs[1].set(ylabel='Memory (bytes)')
+    axs[1].set_yscale("log")
+    axs[1].set(ylabel="Memory (bytes, log scale)")
+    axs[1].set_yticks(np.logspace(1, 5, 5))
     plt.tight_layout()
     plt.savefig("plots/fb_fp_mem.pdf")
