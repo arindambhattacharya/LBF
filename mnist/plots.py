@@ -21,7 +21,7 @@ if __name__ == "__main__":
         (np.linspace(0.01, 1, num=12), np.geomspace(2, 4, num=12))
     )
 
-    fig, axs = plt.subplots(1, 2, figsize=(10, 5))
+    fig, axs = plt.subplots(1, 3, figsize=(15, 5))
     sns.barplot(
         "Batch",
         "FPS",
@@ -32,6 +32,9 @@ if __name__ == "__main__":
         ax=axs[0],
         hue_order=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF", "BF"],
     )
+
+    axs[0].get_legend().remove()
+    axs[0].set(ylabel="FPR")
 
     nn_df.loc[nn_df["Method"] == "CA-LBF I", "Memory"] = np.linspace(100, 1000, 24)
     nn_df.loc[nn_df["Method"] == "CA-LBF II", "Memory"] = np.linspace(100, 1000, 24)
@@ -51,5 +54,41 @@ if __name__ == "__main__":
     axs[1].set_yscale("log")
     axs[1].set(ylabel="Memory (bytes, log scale)")
     axs[1].set_yticks(np.logspace(2, 6, 5))
+    axs[1].get_legend().remove()
+    
+    bf_init_time = [0.01, 0.02, 0.02]
+    bf_insert_time = [0.1, 0.2, 0.2]
+
+    ialbf_insert_time = [0.4, 0.4, 0.4]
+    ialbf_insert_time_train = [0.4, 0.4, 0.4]
+
+    calbf1_insert_time = [0.2, 0.2, 0.2]
+    calbf1_insert_time_train = [2.17, 2.11, 2.10]
+
+    calbf2_insert_time = [0.2, 0.2, 0.2]
+    calbf2_insert_time_train = [5.56, 5.49, 5.70]
+
+    base_insert_time = [0.2, 0.2, 0.2]
+    base_insert_time_train = [0.2, 0.2, 0.2]
+
+
+    df = pd.DataFrame()
+    df.insert(0, 'LBF', base_insert_time + base_insert_time_train)
+    df.insert(1, 'CA-LBF I', calbf1_insert_time + calbf1_insert_time_train)
+    df.insert(2, 'CA-LBF II', calbf2_insert_time + calbf2_insert_time_train)
+    df.insert(3, 'IA-LBF', ialbf_insert_time + ialbf_insert_time_train)
+    df.insert(4, 'BF', bf_insert_time + bf_insert_time)
+    df.insert(5, 'Type', ['Excluding Training'] * 3 + ['Including Training'] * 3)
+
+    mdf = df.melt(id_vars=['Type'], value_vars=['CA-LBF I', 'CA-LBF II', 'IA-LBF', 'LBF', 'BF'])
+    g = sns.barplot('Type', 'value', hue='variable', data=mdf, ci=None, ax=axs[2])
+    g.set(ylabel='Time (s)', xlabel='')
+    handles, labels = g.get_legend_handles_labels()
+    g.legend("")
+    fig.legend(handles, labels, bbox_to_anchor=(0.5,-0.02), loc='lower center', ncol=5)
+    # plt.savefig('plots/mnist_time.pdf')
+    
+
     plt.tight_layout()
-    plt.savefig("plots/mnist_fp_mem.pdf")
+    # plt.savefig("plots/mnist_fp_mem.pdf")
+    plt.savefig('plots/mnist_all.pdf')
