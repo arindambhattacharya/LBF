@@ -3,6 +3,14 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import numpy as np
 
+sns.set(
+    context="paper",
+    style="whitegrid",
+    palette="muted",
+    font="sans-serif",
+    font_scale=1.5,
+)
+
 if __name__ == "__main__":
     df = pd.read_csv("./outputs/fb_clf_output.csv")
 
@@ -52,7 +60,7 @@ if __name__ == "__main__":
     axs[1].set(ylabel="Memory (bytes, log scale)")
     axs[1].set_yticks(np.logspace(1, 5, 5))
     axs[1].get_legend().remove()
-    
+
     ialbf_insert_time = [0.06, 0.06, 0.06]
     ialbf_insert_time_train = [0.06, 0.06, 0.06]
 
@@ -69,20 +77,23 @@ if __name__ == "__main__":
     bf_insert_time = [0.02, 0.02, 0.02]
 
     df = pd.DataFrame()
-    df.insert(0, 'LBF', base_insert_time + base_insert_time_train)
-    df.insert(1, 'CA-LBF I', calbf1_insert_time + calbf1_insert_time_train)
-    df.insert(2, 'CA-LBF II', calbf2_insert_time + calbf2_insert_time_train)
-    df.insert(3, 'IA-LBF', ialbf_insert_time + ialbf_insert_time_train)
-    df.insert(4, 'BF', bf_insert_time + bf_insert_time)
-    df.insert(5, 'Type', ['Excluding Training'] * 3 + ['Including Training'] * 3)
+    df.insert(0, "LBF", base_insert_time + base_insert_time_train)
+    df.insert(1, "CA-LBF I", calbf1_insert_time + calbf1_insert_time_train)
+    df.insert(2, "CA-LBF II", calbf2_insert_time + calbf2_insert_time_train)
+    df.insert(3, "IA-LBF", ialbf_insert_time + ialbf_insert_time_train)
+    df.insert(4, "BF", bf_insert_time + bf_insert_time)
+    df.insert(5, "Type", ["Excluding Training"] * 3 + ["Including Training"] * 3)
 
-    mdf = df.melt(id_vars=['Type'], value_vars=['CA-LBF I', 'CA-LBF II', 'IA-LBF', 'LBF', 'BF'])
-    g = sns.barplot('Type', 'value', hue='variable', data=mdf, ci=None, ax=axs[2])
-    g.set(ylabel='Time (s)', xlabel='')
+    mdf = df.melt(
+        id_vars=["Type"], value_vars=["CA-LBF I", "CA-LBF II", "IA-LBF", "LBF", "BF"]
+    )
+    g = sns.barplot("Type", "value", hue="variable", data=mdf, ci=None, ax=axs[2])
+    g.set(ylabel="Time (s)", xlabel="")
     handles, labels = g.get_legend_handles_labels()
     g.legend("")
-    fig.legend(handles, labels, bbox_to_anchor=(0.5,-0.02), loc='lower center', ncol=5)
+    labels = ['InCa-LBF', 'BaCa-LBF', 'IA-LBF', 'LBF', 'BF']
+    fig.legend(handles, labels, bbox_to_anchor=(0.5, -0.04), loc="lower center", ncol=5)
     plt.tight_layout()
     # plt.savefig('plots/fb_time.pdf')
     # plt.savefig("plots/fb_fp_mem.pdf")
-    plt.savefig('plots/fb_all.pdf')
+    plt.savefig("plots/fb_all.pdf")

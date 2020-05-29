@@ -4,6 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib.ticker
 
+sns.set(
+    context="paper",
+    style="whitegrid",
+    palette="muted",
+    font="sans-serif",
+    font_scale=1.5,
+)
+
 if __name__ == "__main__":
     df = pd.read_csv("./outputs/cifar_clf_output.csv")
 
@@ -84,7 +92,8 @@ if __name__ == "__main__":
     g.set(ylabel='Time (s)', xlabel='')
     handles, labels = g.get_legend_handles_labels()
     g.legend("")
-    fig.legend(handles, labels, bbox_to_anchor=(0.5,-0.02), loc='lower center', ncol=5)
+    labels = ['InCa-LBF', 'BaCa-LBF', 'IA-LBF', 'LBF', 'BF']
+    fig.legend(handles, labels, bbox_to_anchor=(0.5,-0.04), loc='lower center', ncol=5)
     # plt.savefig('plots/cifar_time.pdf')
 
 
