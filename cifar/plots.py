@@ -93,8 +93,12 @@ if __name__ == "__main__":
     handles, labels = g.get_legend_handles_labels()
     g.legend("")
     labels = ['InCa-LBF', 'BaCa-LBF', 'IA-LBF', 'LBF', 'BF']
-    fig.legend(handles, labels, bbox_to_anchor=(0.5,-0.04), loc='lower center', ncol=5)
+    fig.legend(handles, labels, loc='upper center', ncol=5)
     # plt.savefig('plots/cifar_time.pdf')
+
+    axs[0].set_title('(a) Overall FPR', y=-0.3, fontname="Times New Roman", fontsize=16)
+    axs[1].set_title('(b) Overall Memory Consumed', y=-0.3, fontname="Times New Roman", fontsize=16)
+    axs[2].set_title('(c) Averge time per insertion', y=-0.3, fontname="Times New Roman", fontsize=16)
 
 
     plt.tight_layout()
